@@ -1,0 +1,174 @@
+@media (max-width: 575px) and (prefers-color-scheme: dark) {
+  img.navbar-brand-small.navbar-brand-light {
+    display: inline !important;
+  }
+
+  a.navbar-brand img {
+    display: none;
+  }
+}
+
+@media (min-width: 576px) and (prefers-color-scheme: light) {
+  img.navbar-brand-large.navbar-brand-dark {
+    display: inline !important;
+  }
+
+  a.navbar-brand img {
+    display: none;
+  }
+}
+
+@media (min-width: 576px) and (prefers-color-scheme: dark) {
+  img.navbar-brand-large.navbar-brand-light {
+    display: inline !important;
+  }
+
+  a.navbar-brand img {
+    display: none;
+  }
+}
+
+.gradient-blue-red {
+  background: rgb(209, 59, 68);
+  background: linear-gradient(
+    90deg,
+    rgba(15, 143, 216, 1) 0%,
+    rgba(209, 59, 68, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-img-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#main-title {
+  background-image: linear-gradient(
+    90deg,
+    rgba(15, 143, 216, 1) 0%,
+    rgba(209, 59, 68, 1) 100%
+  );
+  background-repeat: no-repeat;
+  background-position-y: bottom;
+  background-size: 100% 15%;
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 10px;
+}
+
+.nav-link,
+.nav-item .dropdown-item {
+  font-size: 1.2rem;
+}
+
+/*!
+ * Start Bootstrap - Stylish Portfolio v6.0.6 (https://startbootstrap.com/theme/stylish-portfolio)
+ * Copyright 2013-2023 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-stylish-portfolio/blob/master/LICENSE)
+ */
+.content-section {
+  padding-top: 7.5rem;
+  padding-bottom: 7.5rem;
+}
+
+.content-section-heading h2,
+.content-section-heading .h2 {
+  font-size: 3rem;
+}
+.content-section-heading h3,
+.content-section-heading .h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+footer.footer {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+footer.footer .social-link {
+  display: block;
+  text-decoration: none;
+  height: 4rem;
+  width: 4rem;
+  line-height: 4.3rem;
+  font-size: 1.5rem;
+  background-color: #1d809f;
+  transition: background-color 0.15s ease-in-out;
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.1);
+}
+footer.footer .social-link:hover {
+  background-color: #155d74;
+  text-decoration: none;
+}
+
+.portfolio-item {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  max-width: 530px;
+  margin: auto auto 1rem;
+}
+.portfolio-item .caption {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(33, 37, 41, 0.2);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.portfolio-item .caption .caption-content {
+  color: #fff;
+  margin: auto 2rem 2rem;
+}
+.portfolio-item .caption .caption-content h2,
+.portfolio-item .caption .caption-content .h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+.portfolio-item .caption .caption-content p {
+  font-weight: 300;
+  font-size: 1.2rem;
+}
+@media (min-width: 992px) {
+  .portfolio-item {
+    max-width: none;
+    margin: 0;
+  }
+  .portfolio-item .caption {
+    transition: background-color 0.7s, -webkit-clip-path 0.15s ease-out;
+    transition: clip-path 0.15s ease-out, background-color 0.7s;
+    transition: clip-path 0.15s ease-out, background-color 0.7s,
+      -webkit-clip-path 0.15s ease-out;
+    -webkit-clip-path: inset(0px);
+    clip-path: inset(0px);
+  }
+  .portfolio-item .caption .caption-content {
+    transition: opacity 0.25s;
+    margin-left: 5rem;
+    margin-right: 5rem;
+    margin-bottom: 5rem;
+  }
+  .portfolio-item img {
+    transition: -webkit-clip-path 0.25s ease-out;
+    transition: clip-path 0.25s ease-out;
+    transition: clip-path 0.25s ease-out, -webkit-clip-path 0.25s ease-out;
+    -webkit-clip-path: inset(-1px);
+    clip-path: inset(-1px);
+  }
+  .portfolio-item:hover img {
+    -webkit-clip-path: inset(0.2rem);
+    clip-path: inset(0.2rem);
+  }
+  .portfolio-item:hover .caption {
+    background: linear-gradient(
+      90deg,
+      rgba(15, 143, 216, 0.75) 0%,
+      rgba(209, 59, 68, 0.75) 100%
+    );
+    -webkit-clip-path: inset(0.2rem);
+    clip-path: inset(0.2rem);
+  }
+}

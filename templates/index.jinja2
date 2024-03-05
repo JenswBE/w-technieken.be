@@ -1,0 +1,66 @@
+{% extends "base.jinja2" %}
+
+{% block base_content %}
+<div class="row g-0 mx-0">
+    <div class="col">
+        <div class="card border-0" style="max-height: 95vh;">
+            <img src="/img/index/banner.jpg" class="card-img rounded-0"
+                style="height: 95vh; max-height: 95vh; object-fit: cover;" />
+            <div class="card-img-overlay">
+                <div class="container h-100">
+                    <div class="d-flex flex-column h-100 justify-content-center">
+                        <div>
+                            <h1 id="main-title" class="fw-bold" style="font-size: 5rem;">Uw specialist</h1>
+                            <h2 style="font-size: 3rem;">aircoheaters, warmtepompen en ventilatie</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Realisaties-->
+<section class="content-section" id="portfolio">
+    <div class="container px-4 px-lg-5">
+        <div class="content-section-heading text-center">
+            <h2 class="mb-5">Realisaties</h2>
+        </div>
+        <div class="row g-3 justify-content-center">
+            <div class="col-lg-6">
+                <a class="portfolio-item" href="#!">
+                    <div class="caption">
+                        <div class="caption-content">
+                            <div class="h2">Aircoheaters</div>
+                            <p class="mb-0">Koud in de zomer and warm in de winter!</p>
+                        </div>
+                    </div>
+                    <img class="img-fluid" src="/img/index/realisatie_aircoheater.jpg" alt="Aircoheater" />
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <a class="portfolio-item" href="#!">
+                    <div class="caption">
+                        <div class="caption-content">
+                            <div class="h2">Warmtepompen</div>
+                            <p class="mb-0">Verwarmen op een ecologische manier.</p>
+                        </div>
+                    </div>
+                    <img class="img-fluid" src="/img/index/realisatie_warmtepomp.jpg" alt="..." />
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <a class="portfolio-item" href="#!">
+                    <div class="caption">
+                        <div class="caption-content">
+                            <div class="h2">Ventilatie</div>
+                            <p class="mb-0">Effici&euml;nt frisse lucht in huis.</p>
+                        </div>
+                    </div>
+                    <img class="img-fluid" src="/img/index/realisatie_ventilatie.jpg" alt="..." />
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
