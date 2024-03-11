@@ -1,6 +1,10 @@
 # Running locally
 
 ```bash
-go install github.com/cespare/reflex@latest
-reflex -s -vR 'output/.*' -R 'target/.*' -- cargo run
+cargo install cargo-watch
+cargo watch -x run
+
+# In another terminal
+cd output
+python3 -m http.server
 ```

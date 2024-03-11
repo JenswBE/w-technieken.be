@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 askama = "0.12.1"
+openapi = { path = "./openapi" }
