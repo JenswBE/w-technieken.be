@@ -1,0 +1,43 @@
+{% extends "base.jinja2" %}
+
+{% block base_content %}
+<div class="container pt-3 pb-5">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h1><span class="spellebel-title">{{ realisation.name }}</span></h1>
+        </div>
+        <div class="col-12 mb-3">
+            <a class="btn btn-text" href="/aanbod/" role="button">
+                <i class="bi bi-arrow-left"></i>
+                TERUG NAAR OVERZICHT
+            </a>
+        </div>
+        {% if realisation.slogan.is_some() %}
+        <div class="col-12">{{ realisation.slogan.as_ref().unwrap() }}</div>
+        {% endif %}
+        <div class="col-12">
+            <p>
+                Klik op de voorbeelden om de volledige foto te zien.
+            </p>
+        </div>
+    </div>
+    <div class="row g-4">
+        {# {{ $imgBasePath := pathJoin .Data.AanbodImgPath .RepeatedKey }}
+        {{ $imgLightboxPath := pathJoin $imgBasePath "lightbox" }}
+        {{ $imgThumbnailPath := pathJoin $imgBasePath "thumbnail" }}
+        {{ range readDir ( pathJoin .Data.OutputPath $imgLightboxPath ) }}
+        <div class="col-6 col-sm-4 col-md-3">
+            <a href="{{ pathJoin $imgLightboxPath .Name }}" data-toggle="lightbox" data-gallery="w-tech-gallery">
+                <img src="{{ pathJoin $imgThumbnailPath .Name }}" class="img-fluid">
+            </a>
+        </div>
+        {{ end }} #}
+    </div>
+</div>
+{% endblock %}
+
+{% block base_body_end %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bs5-lightbox/1.8.3/index.bundle.min.js"
+    integrity="sha512-wOwwlvSeaATXscQHfDsAUnt3cBBvrKkyf7lI+k/88X6x/fxtc678fTdKRNcxZxtRdpzYFiIqqW5uIRUiPlZJlw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}

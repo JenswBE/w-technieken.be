@@ -7,4 +7,11 @@ edition = "2021"
 
 [dependencies]
 askama = "0.12.1"
-openapi = { path = "./openapi" }
+cynic = { version = "3", features = ["http-reqwest-blocking"] }
+reqwest = "0.11.26"
+
+[build-dependencies]
+cynic-codegen = { version = "3" }
+
+[dev-dependencies]
+insta = "1"
