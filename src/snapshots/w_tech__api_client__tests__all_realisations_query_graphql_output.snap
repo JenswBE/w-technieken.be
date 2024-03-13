@@ -1,10 +1,9 @@
 ---
-source: src/main.rs
+source: src/api_client.rs
 expression: operation.query
 ---
 query AllRealisations {
   realisations {
-    id
     name
     slogan
     slug
