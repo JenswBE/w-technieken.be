@@ -86,21 +86,6 @@ footer.footer {
   padding-top: 5rem;
   padding-bottom: 5rem;
 }
-footer.footer .social-link {
-  display: block;
-  text-decoration: none;
-  height: 4rem;
-  width: 4rem;
-  line-height: 4.3rem;
-  font-size: 1.5rem;
-  background-color: #1d809f;
-  transition: background-color 0.15s ease-in-out;
-  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.1);
-}
-footer.footer .social-link:hover {
-  background-color: #155d74;
-  text-decoration: none;
-}
 
 .portfolio-item {
   display: block;
@@ -137,30 +122,15 @@ footer.footer .social-link:hover {
     max-width: none;
     margin: 0;
   }
-  .portfolio-item .caption {
-    transition: background-color 0.7s, -webkit-clip-path 0.15s ease-out;
-    transition: clip-path 0.15s ease-out, background-color 0.7s;
-    transition: clip-path 0.15s ease-out, background-color 0.7s,
-      -webkit-clip-path 0.15s ease-out;
-    -webkit-clip-path: inset(0px);
-    clip-path: inset(0px);
-  }
   .portfolio-item .caption .caption-content {
     transition: opacity 0.25s;
     margin-left: 5rem;
     margin-right: 5rem;
     margin-bottom: 5rem;
   }
-  .portfolio-item img {
-    transition: -webkit-clip-path 0.25s ease-out;
-    transition: clip-path 0.25s ease-out;
-    transition: clip-path 0.25s ease-out, -webkit-clip-path 0.25s ease-out;
-    -webkit-clip-path: inset(-1px);
-    clip-path: inset(-1px);
-  }
-  .portfolio-item:hover img {
-    -webkit-clip-path: inset(0.2rem);
-    clip-path: inset(0.2rem);
+  .portfolio-item .caption {
+    transition: 0.5s;
+    background: transparent;
   }
   .portfolio-item:hover .caption {
     background: linear-gradient(
@@ -168,7 +138,6 @@ footer.footer .social-link:hover {
       rgba(15, 143, 216, 0.75) 0%,
       rgba(209, 59, 68, 0.75) 100%
     );
-    -webkit-clip-path: inset(0.2rem);
-    clip-path: inset(0.2rem);
+    transition: 0.5s;
   }
 }
