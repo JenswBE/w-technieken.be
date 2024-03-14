@@ -5,7 +5,10 @@ use askama::Template;
 use reqwest::Url;
 use std::path::Path;
 use std::process::{self, Command};
-use std::{fs, io};
+use std::{env, fs, io};
+
+const LOCAL_BASE_URL: &'static str = "http://localhost:8055";
+const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
 
 #[derive(Template)]
 #[template(path = "index.jinja2", ext = "html")]
@@ -32,9 +35,18 @@ struct NavLink<'a> {
 }
 
 fn main() {
+    // Setup logger
+    env_logger::init_from_env(
+        env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, "info"),
+    );
+
+    // Collect env vars
+    let base_url = env_var_with_default("WTECH_BASE_URL", LOCAL_BASE_URL);
+    let api_key = env_var_with_default("WTECH_API_KEY", LOCAL_API_KEY);
+
     // Create HTTP client
-    let client = api_client::get_api_client("iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY");
-    let base_url = Url::parse("http://localhost:8055").unwrap();
+    let client = api_client::get_api_client(&api_key);
+    let base_url = Url::parse(&base_url).unwrap();
 
     // Fetch realisations
     let realisations = api_client::get_realisations(&client, &base_url);
@@ -109,6 +121,13 @@ fn main() {
         )
         .expect("Failed to write index.html");
     }
+}
+
+fn env_var_with_default(name: &'static str, default: &'static str) -> String {
+    env::var(name).unwrap_or_else(|_| {
+        log::info!("Unable to read {name}. Using default: {default}");
+        default.to_string()
+    })
 }
 
 fn ensure_empty_dir(path: &Path) -> io::Result<()> {
