@@ -25,31 +25,26 @@ mod schema {}
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
-struct AllRealisations {
+pub struct AllRealisations {
     pub realisations: Vec<Realisations>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations")]
-struct Realisations {
-    pub name: Option<String>,
-    pub slogan: Option<String>,
-    pub slug: Option<String>,
+pub struct Realisations {
     #[cynic(rename = "main_image")]
-    pub main_image: Option<DirectusFiles>,
+    pub main_image: String,
+    pub name: String,
+    pub slogan: Option<String>,
+    pub slug: String,
+    pub sort: Option<i32>,
     #[cynic(rename = "additional_images")]
     pub additional_images: Option<Vec<Option<RealisationsFiles>>>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
-#[cynic(graphql_type = "directus_files")]
-struct DirectusFiles {
-    pub id: cynic::Id,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations_files")]
-struct RealisationsFiles {
+pub struct RealisationsFiles {
     pub id: cynic::Id,
 }
 
@@ -68,11 +63,16 @@ mod tests {
 pub fn get_realisations(client: &Client, base_url: &Url) -> Vec<Realisation> {
     use cynic::http::ReqwestBlockingExt;
     let graphql_url = base_url.join("/graphql").unwrap();
-    client
+    let resp = client
         .post(graphql_url)
         .run_graphql(AllRealisations::build(()))
-        .expect("Failed to fetch realisations")
-        .data
+        .expect("Failed to fetch realisations");
+    if let Some(errors) = resp.errors {
+        for e in errors {
+            log::error!("GraphQL query AllRealisations returned error(s): {e}")
+        }
+    };
+    resp.data
         .expect("No realisations returned")
         .realisations
         .into_iter()
@@ -91,14 +91,10 @@ pub struct Realisation {
 impl From<Realisations> for Realisation {
     fn from(item: Realisations) -> Self {
         Self {
-            name: item.name.expect("Realisation must have a name"),
-            slug: item.slug.expect("Realisation must have a slug"),
+            name: item.name,
+            slug: item.slug,
             slogan: item.slogan,
-            main_image: item
-                .main_image
-                .expect("Realisation must have a main image")
-                .id
-                .into_inner(),
+            main_image: item.main_image,
             // secondary_images: (),
         }
     }

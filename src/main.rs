@@ -2,6 +2,7 @@ mod api_client;
 
 use crate::api_client::Realisation;
 use askama::Template;
+use dotenv::dotenv;
 use reqwest::Url;
 use std::path::Path;
 use std::process::{self, Command};
@@ -35,6 +36,9 @@ struct NavLink<'a> {
 }
 
 fn main() {
+    // Load .env file
+    dotenv().ok();
+
     // Setup logger
     env_logger::init_from_env(
         env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, "info"),

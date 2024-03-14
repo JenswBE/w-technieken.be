@@ -1,4 +1,5 @@
 # Custom ignores
+.env
 /themes
 /output
 /assets/img/ignored
