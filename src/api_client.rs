@@ -1,43 +1,104 @@
 use cynic::QueryBuilder;
-use reqwest::{blocking::Client, header, Url};
+use log::{log_enabled, Level};
+use reqwest::{blocking, header, Url};
+use std::fs::File;
+use std::io::copy;
+use std::path::Path;
 
-pub fn get_api_client(api_token: &str) -> Client {
-    let mut headers = header::HeaderMap::new();
-    let mut auth_value = header::HeaderValue::from_str(&("Bearer ".to_string() + api_token))
-        .expect("Unable to set authentication header");
-    auth_value.set_sensitive(true);
-    headers.insert(header::AUTHORIZATION, auth_value);
-    reqwest::blocking::Client::builder()
-        .default_headers(headers)
-        .build()
-        .expect("Failed to create reqwest client")
+pub struct Client {
+    http_client: blocking::Client,
+    base_url: Url,
 }
 
-// fn download_asset(config: &Configuration, id: &str) {
-//     let file = openapi::apis::assets_api::get_asset(config, id, None, None, Some(true))
-//         .await
-//         .expect("Failed to get asset");
-//     fs::write("output/test.jpg", file).expect("Failed to write image");
-// }
+impl Client {
+    pub fn build(base_url: Url, api_token: &str) -> Self {
+        let mut headers = header::HeaderMap::new();
+        let mut auth_value = header::HeaderValue::from_str(&("Bearer ".to_string() + api_token))
+            .expect("Unable to set authentication header");
+        auth_value.set_sensitive(true);
+        headers.insert(header::AUTHORIZATION, auth_value);
+        let http_client = reqwest::blocking::Client::builder()
+            .default_headers(headers)
+            .connection_verbose(true)
+            .build()
+            .expect("Failed to create reqwest client");
 
+        Client {
+            http_client,
+            base_url,
+        }
+    }
+
+    pub fn get_realisations(&self) -> Vec<Realisation> {
+        use cynic::http::ReqwestBlockingExt;
+        let graphql_url = self.base_url.join("/graphql").unwrap();
+        let resp = self
+            .http_client
+            .post(graphql_url)
+            .run_graphql(AllRealisations::build(()))
+            .expect("Failed to fetch realisations");
+        if let Some(errors) = resp.errors {
+            for e in errors {
+                log::error!("GraphQL query AllRealisations returned error(s): {e}")
+            }
+        };
+        resp.data
+            .expect("No realisations returned")
+            .realisations
+            .into_iter()
+            .map(Realisation::from)
+            .collect()
+    }
+
+    pub fn download_asset<P: AsRef<Path>>(
+        &self,
+        output_dir: P,
+        filename: &str,
+        id: &str,
+        key: Option<&str>,
+    ) {
+        let asset_url = self
+            .base_url
+            .join(&format!("/assets/{}/{}", id, filename))
+            .unwrap();
+        let mut req = self.http_client.get(asset_url.as_ref());
+        if let Some(key) = key {
+            req = req.query(&[("key", key), ("download", "true")]);
+        }
+        let mut resp = req.send().expect("Unable to get asset");
+        if !resp.status().is_success() {
+            log::error!(
+                "Failed to fetch asset from {}: {}",
+                asset_url,
+                resp.text().unwrap()
+            );
+            panic!("Failed to fetch asset")
+        }
+        let output_path = output_dir.as_ref().join(filename);
+        let mut file = File::create(&output_path)
+            .expect(&format!("Unable to create file: {}", output_path.display()));
+        copy(&mut resp, &mut file).expect("Unable to write asset to file");
+    }
+}
+
+// Generated with https://generator.cynic-rs.dev/
 #[cynic::schema("directus")]
 mod schema {}
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
-pub struct AllRealisations {
-    pub realisations: Vec<Realisations>,
+struct AllRealisations {
+    realisations: Vec<Realisations>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations")]
-pub struct Realisations {
+struct Realisations {
+    name: String,
+    slogan: Option<String>,
+    slug: String,
     #[cynic(rename = "main_image")]
-    pub main_image: String,
-    pub name: String,
-    pub slogan: Option<String>,
-    pub slug: String,
-    pub sort: Option<i32>,
+    pub main_image: Option<DirectusFiles>,
     #[cynic(rename = "additional_images")]
     pub additional_images: Option<Vec<Option<RealisationsFiles>>>,
 }
@@ -45,6 +106,12 @@ pub struct Realisations {
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations_files")]
 pub struct RealisationsFiles {
+    pub id: cynic::Id,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "directus_files")]
+pub struct DirectusFiles {
     pub id: cynic::Id,
 }
 
@@ -58,26 +125,6 @@ mod tests {
         let operation = AllRealisations::build(());
         insta::assert_snapshot!(operation.query);
     }
-}
-
-pub fn get_realisations(client: &Client, base_url: &Url) -> Vec<Realisation> {
-    use cynic::http::ReqwestBlockingExt;
-    let graphql_url = base_url.join("/graphql").unwrap();
-    let resp = client
-        .post(graphql_url)
-        .run_graphql(AllRealisations::build(()))
-        .expect("Failed to fetch realisations");
-    if let Some(errors) = resp.errors {
-        for e in errors {
-            log::error!("GraphQL query AllRealisations returned error(s): {e}")
-        }
-    };
-    resp.data
-        .expect("No realisations returned")
-        .realisations
-        .into_iter()
-        .map(Realisation::from)
-        .collect()
 }
 
 pub struct Realisation {
@@ -94,7 +141,11 @@ impl From<Realisations> for Realisation {
             name: item.name,
             slug: item.slug,
             slogan: item.slogan,
-            main_image: item.main_image,
+            main_image: item
+                .main_image
+                .expect("Realisation must have a main image")
+                .id
+                .into_inner(),
             // secondary_images: (),
         }
     }

@@ -1,6 +1,6 @@
 mod api_client;
 
-use crate::api_client::Realisation;
+use crate::api_client::{Client, Realisation};
 use askama::Template;
 use dotenv::dotenv;
 use reqwest::Url;
@@ -49,17 +49,17 @@ fn main() {
     let api_key = env_var_with_default("WTECH_API_KEY", LOCAL_API_KEY);
 
     // Create HTTP client
-    let client = api_client::get_api_client(&api_key);
     let base_url = Url::parse(&base_url).unwrap();
+    let client = Client::build(base_url, &api_key);
 
     // Fetch realisations
-    let realisations = api_client::get_realisations(&client, &base_url);
+    let realisations = client.get_realisations();
 
     // Prepare output dir
     let path_output = Path::new("output");
-    let path_assets = Path::new("assets");
+    let path_static = Path::new("static");
     ensure_empty_dir(path_output).expect("Unable to ensure empty output directory");
-    copy_assets(&path_assets.join("."), path_output).expect("Unable to copy assets");
+    copy_static(&path_static.join("."), path_output).expect("Unable to copy statics");
 
     // Nav links
     let nav_link_start = NavLink {
@@ -107,11 +107,14 @@ fn main() {
     )
     .expect("Failed to write index.html");
 
+    let path_assets = path_output.join("assets");
+    fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
     let path_realisaties = path_output.join("realisaties");
     for realisation in &realisations {
-        // download_image(&config, &realisation.main_image).await;
+        let filename = realisation.main_image.clone() + ".jpg";
+        client.download_asset(&path_assets, &filename, &realisation.main_image, None);
         let path_realisation = path_realisaties.join(&realisation.slug);
-        fs::create_dir_all(path_realisation.clone()).expect("Failed to create realisation dir");
+        fs::create_dir_all(&path_realisation).expect("Failed to create realisation dir");
         fs::write(
             path_realisation.join("index.html"),
             TemplateRealisations {
@@ -148,7 +151,7 @@ fn ensure_empty_dir(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn copy_assets(source: &Path, target: &Path) -> io::Result<process::Output> {
+fn copy_static(source: &Path, target: &Path) -> io::Result<process::Output> {
     Command::new("cp")
         .args([
             "--recursive",

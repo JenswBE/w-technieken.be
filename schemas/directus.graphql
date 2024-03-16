@@ -47,10 +47,14 @@ type realisations {
   Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
   """
   slug: String!
-  """
-  Wordt getoond op de startpagina
-  """
-  main_image: String!
+  main_image(
+    filter: directus_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): directus_files
   slogan: String
   additional_images(
     filter: realisations_files_filter
@@ -63,52 +67,97 @@ type realisations {
   additional_images_func: count_functions
 }
 
-type realisations_files {
+type directus_files {
   id: ID!
-  realisations_id(
-    filter: realisations_filter
-    sort: [String]
-    limit: Int
-    offset: Int
-    page: Int
-    search: String
-  ): realisations
-  directus_files_id: String
-  sort: Int
-}
-
-input realisations_filter {
-  id: number_filter_operators
-  sort: number_filter_operators
-  name: string_filter_operators
-  slug: string_filter_operators
-  main_image: string_filter_operators
-  slogan: string_filter_operators
-  additional_images: realisations_files_filter
-  additional_images_func: count_function_filter_operators
-  _and: [realisations_filter]
-  _or: [realisations_filter]
-}
-
-input number_filter_operators {
-  _eq: GraphQLStringOrFloat
-  _neq: GraphQLStringOrFloat
-  _in: [GraphQLStringOrFloat]
-  _nin: [GraphQLStringOrFloat]
-  _gt: GraphQLStringOrFloat
-  _gte: GraphQLStringOrFloat
-  _lt: GraphQLStringOrFloat
-  _lte: GraphQLStringOrFloat
-  _null: Boolean
-  _nnull: Boolean
-  _between: [GraphQLStringOrFloat]
-  _nbetween: [GraphQLStringOrFloat]
+  storage: String!
+  filename_disk: String
+  filename_download: String!
+  title: String
+  type: String
+  folder: String
+  uploaded_by: String
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  charset: String
+  filesize: GraphQLBigInt
+  width: Int
+  height: Int
+  duration: Int
+  embed: String
+  description: String
+  location: String
+  tags: JSON
+  tags_func: count_functions
+  metadata: JSON
+  metadata_func: count_functions
+  focal_point_x: Int
+  focal_point_y: Int
 }
 
 """
-A Float or a String
+ISO8601 Date values
 """
-scalar GraphQLStringOrFloat
+scalar Date
+
+type datetime_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
+  hour: Int
+  minute: Int
+  second: Int
+}
+
+"""
+BigInt value
+"""
+scalar GraphQLBigInt
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type count_functions {
+  count: Int
+}
+
+input directus_files_filter {
+  id: string_filter_operators
+  storage: string_filter_operators
+  filename_disk: string_filter_operators
+  filename_download: string_filter_operators
+  title: string_filter_operators
+  type: string_filter_operators
+  folder: string_filter_operators
+  uploaded_by: string_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  charset: string_filter_operators
+  filesize: big_int_filter_operators
+  width: number_filter_operators
+  height: number_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  description: string_filter_operators
+  location: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
+  focal_point_x: number_filter_operators
+  focal_point_y: number_filter_operators
+  _and: [directus_files_filter]
+  _or: [directus_files_filter]
+}
 
 input string_filter_operators {
   _eq: String
@@ -132,21 +181,112 @@ input string_filter_operators {
   _nempty: Boolean
 }
 
-input realisations_files_filter {
-  id: number_filter_operators
-  realisations_id: realisations_filter
-  directus_files_id: string_filter_operators
-  sort: number_filter_operators
-  _and: [realisations_files_filter]
-  _or: [realisations_files_filter]
+input date_filter_operators {
+  _eq: String
+  _neq: String
+  _gt: String
+  _gte: String
+  _lt: String
+  _lte: String
+  _null: Boolean
+  _nnull: Boolean
+  _in: [String]
+  _nin: [String]
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+"""
+A Float or a String
+"""
+scalar GraphQLStringOrFloat
+
+input datetime_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
+  hour: number_filter_operators
+  minute: number_filter_operators
+  second: number_filter_operators
+}
+
+input number_filter_operators {
+  _eq: GraphQLStringOrFloat
+  _neq: GraphQLStringOrFloat
+  _in: [GraphQLStringOrFloat]
+  _nin: [GraphQLStringOrFloat]
+  _gt: GraphQLStringOrFloat
+  _gte: GraphQLStringOrFloat
+  _lt: GraphQLStringOrFloat
+  _lte: GraphQLStringOrFloat
+  _null: Boolean
+  _nnull: Boolean
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input big_int_filter_operators {
+  _eq: GraphQLBigInt
+  _neq: GraphQLBigInt
+  _in: [GraphQLBigInt]
+  _nin: [GraphQLBigInt]
+  _gt: GraphQLBigInt
+  _gte: GraphQLBigInt
+  _lt: GraphQLBigInt
+  _lte: GraphQLBigInt
+  _null: Boolean
+  _nnull: Boolean
+  _between: [GraphQLBigInt]
+  _nbetween: [GraphQLBigInt]
 }
 
 input count_function_filter_operators {
   count: number_filter_operators
 }
 
-type count_functions {
-  count: Int
+type realisations_files {
+  id: ID!
+  realisations_id(
+    filter: realisations_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): realisations
+  directus_files_id(
+    filter: directus_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): directus_files
+  sort: Int
+}
+
+input realisations_filter {
+  id: number_filter_operators
+  sort: number_filter_operators
+  name: string_filter_operators
+  slug: string_filter_operators
+  main_image: directus_files_filter
+  slogan: string_filter_operators
+  additional_images: realisations_files_filter
+  additional_images_func: count_function_filter_operators
+  _and: [realisations_filter]
+  _or: [realisations_filter]
+}
+
+input realisations_files_filter {
+  id: number_filter_operators
+  realisations_id: realisations_filter
+  directus_files_id: directus_files_filter
+  sort: number_filter_operators
+  _and: [realisations_files_filter]
+  _or: [realisations_files_filter]
 }
 
 type realisations_aggregated {
@@ -161,11 +301,6 @@ type realisations_aggregated {
   min: realisations_aggregated_fields
   max: realisations_aggregated_fields
 }
-
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSON
 
 type realisations_aggregated_count {
   id: Int
@@ -199,10 +334,7 @@ type version_realisations {
   Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
   """
   slug: String!
-  """
-  Wordt getoond op de startpagina
-  """
-  main_image: String!
+  main_image: JSON
   slogan: String
   additional_images: JSON
   additional_images_func: count_functions
@@ -240,25 +372,32 @@ type realisations_files_aggregated_fields {
 type version_realisations_files {
   id: ID!
   realisations_id: JSON
-  directus_files_id: String
+  directus_files_id: JSON
   sort: Int
 }
 
 type Subscription {
+  directus_files_mutated(event: EventEnum): directus_files_mutated
   realisations_mutated(event: EventEnum): realisations_mutated
   realisations_files_mutated(event: EventEnum): realisations_files_mutated
 }
 
-type realisations_mutated {
+type directus_files_mutated {
   key: ID!
   event: EventEnum
-  data: realisations
+  data: directus_files
 }
 
 enum EventEnum {
   create
   update
   delete
+}
+
+type realisations_mutated {
+  key: ID!
+  event: EventEnum
+  data: realisations
 }
 
 type realisations_files_mutated {
