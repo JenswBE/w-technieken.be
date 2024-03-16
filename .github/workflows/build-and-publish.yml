@@ -4,6 +4,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: generate_website
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
 
