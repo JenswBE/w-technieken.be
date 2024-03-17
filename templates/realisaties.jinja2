@@ -7,7 +7,7 @@
             <h1><span class="spellebel-title">{{ realisation.name }}</span></h1>
         </div>
         <div class="col-12 mb-3">
-            <a class="btn btn-text" href="/" role="button">
+            <a class="btn btn-text" href="/#realisaties" role="button">
                 <i class="bi bi-arrow-left"></i>
                 TERUG NAAR START
             </a>
@@ -22,16 +22,15 @@
         </div>
     </div>
     <div class="row g-4">
-        {# {{ $imgBasePath := pathJoin .Data.AanbodImgPath .RepeatedKey }}
-        {{ $imgLightboxPath := pathJoin $imgBasePath "lightbox" }}
-        {{ $imgThumbnailPath := pathJoin $imgBasePath "thumbnail" }}
-        {{ range readDir ( pathJoin .Data.OutputPath $imgLightboxPath ) }}
+        {% if realisation.secondary_images.is_some() %}
+        {% for image_id in realisation.secondary_images.as_ref().unwrap() %}
         <div class="col-6 col-sm-4 col-md-3">
-            <a href="{{ pathJoin $imgLightboxPath .Name }}" data-toggle="lightbox" data-gallery="w-tech-gallery">
-                <img src="{{ pathJoin $imgThumbnailPath .Name }}" class="img-fluid">
+            <a href="/assets/{{ image_id }}.jpg" data-toggle="lightbox" data-gallery="w-tech-gallery">
+                <img src="/assets/{{ image_id }}-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
-        {{ end }} #}
+        {% endfor %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -111,13 +111,22 @@ fn main() {
     fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
     let path_realisaties = path_output.join("realisaties");
     for realisation in &realisations {
-        let filename = realisation.main_image.clone() + "-index-realisatie.jpg";
+        // Download asset - Index realisatie
         client.download_asset(
             &path_assets,
-            &filename,
             &realisation.main_image,
+            "jpg",
             Some("index-realisatie"),
         );
+
+        // Download asset - Realisatie
+        if let Some(secondary_images) = &realisation.secondary_images {
+            for image_id in secondary_images {
+                client.download_asset(&path_assets, image_id, "jpg", None);
+                client.download_asset(&path_assets, image_id, "jpg", Some("realisatie-thumbnail"));
+            }
+        }
+
         let path_realisation = path_realisaties.join(&realisation.slug);
         fs::create_dir_all(&path_realisation).expect("Failed to create realisation dir");
         fs::write(

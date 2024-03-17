@@ -1,5 +1,4 @@
 use cynic::QueryBuilder;
-use log::{log_enabled, Level};
 use reqwest::{blocking, header, Url};
 use std::fs::File;
 use std::io::copy;
@@ -53,14 +52,21 @@ impl Client {
     pub fn download_asset<P: AsRef<Path>>(
         &self,
         output_dir: P,
-        filename: &str,
         id: &str,
+        extension: &str,
         key: Option<&str>,
     ) {
+        let filename = format!(
+            "{}{}.{}",
+            id,
+            key.map_or("".to_string(), |k| "-".to_string() + k),
+            extension
+        );
         let asset_url = self
             .base_url
             .join(&format!("/assets/{}/{}", id, filename))
             .unwrap();
+        log::info!("Downloading asset {} ...", filename);
         let mut req = self.http_client.get(asset_url.as_ref());
         if let Some(key) = key {
             req = req.query(&[("key", key), ("download", "true")]);
@@ -106,7 +112,8 @@ struct Realisations {
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations_files")]
 pub struct RealisationsFiles {
-    pub id: cynic::Id,
+    #[cynic(rename = "directus_files_id")]
+    pub directus_files_id: Option<DirectusFiles>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
@@ -132,7 +139,7 @@ pub struct Realisation {
     pub slug: String,
     pub slogan: Option<String>,
     pub main_image: String,
-    // pub secondary_images: Vec<String>,
+    pub secondary_images: Option<Vec<String>>,
 }
 
 impl From<Realisations> for Realisation {
@@ -146,7 +153,18 @@ impl From<Realisations> for Realisation {
                 .expect("Realisation must have a main image")
                 .id
                 .into_inner(),
-            // secondary_images: (),
+            secondary_images: item.additional_images.map(|images| {
+                images
+                    .into_iter()
+                    .map(|file| {
+                        file.expect("Additional image file cannot be None")
+                            .directus_files_id
+                            .expect("Additional image file must have Directus file ID")
+                            .id
+                            .into_inner()
+                    })
+                    .collect()
+            }),
         }
     }
 }
