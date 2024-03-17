@@ -1,4 +1,4 @@
-@media (max-width: 575px) and (prefers-color-scheme: dark) {
+@media (max-width: 449px) and (prefers-color-scheme: dark) {
   img.navbar-brand-small.navbar-brand-light {
     display: inline !important;
   }
@@ -8,7 +8,7 @@
   }
 }
 
-@media (min-width: 576px) and (prefers-color-scheme: light) {
+@media (min-width: 450px) and (prefers-color-scheme: light) {
   img.navbar-brand-large.navbar-brand-dark {
     display: inline !important;
   }
@@ -18,7 +18,7 @@
   }
 }
 
-@media (min-width: 576px) and (prefers-color-scheme: dark) {
+@media (min-width: 450px) and (prefers-color-scheme: dark) {
   img.navbar-brand-large.navbar-brand-light {
     display: inline !important;
   }
