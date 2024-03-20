@@ -3,20 +3,20 @@
 {% block base_content %}
 <div class="container pt-3 pb-5">
     <div class="row">
-        <div class="col-12 mb-3">
-            <h1><span class="spellebel-title">{{ realisation.name }}</span></h1>
-        </div>
-        <div class="col-12 mb-3">
+        <div class="col-12 pt-3 pb-3">
             <a class="btn btn-text" href="/#realisaties" role="button">
                 <i class="bi bi-arrow-left"></i>
                 TERUG NAAR START
             </a>
         </div>
+        <div class="col-12 pt-3">
+            <h1>{{ realisation.name }}</h1>
+        </div>
         {% if realisation.slogan.is_some() %}
         <div class="col-12">{{ realisation.slogan.as_ref().unwrap() }}</div>
         {% endif %}
-        <div class="col-12">
-            <p>
+        <div class="col-12 pt-4">
+            <p class="fw-light">
                 Klik op de voorbeelden om de volledige foto te zien.
             </p>
         </div>
@@ -24,8 +24,8 @@
     <div class="row g-4">
         {% if realisation.secondary_images.is_some() %}
         {% for image_id in realisation.secondary_images.as_ref().unwrap() %}
-        <div class="col-6 col-sm-4 col-md-3">
-            <a href="/assets/{{ image_id }}.jpg" data-toggle="lightbox" data-gallery="w-tech-gallery">
+        <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
+            <a data-fslightbox href="/assets/{{ image_id }}-realisatie-full.jpg">
                 <img src="/assets/{{ image_id }}-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
@@ -36,7 +36,7 @@
 {% endblock %}
 
 {% block base_body_end %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bs5-lightbox/1.8.3/index.bundle.min.js"
-    integrity="sha512-wOwwlvSeaATXscQHfDsAUnt3cBBvrKkyf7lI+k/88X6x/fxtc678fTdKRNcxZxtRdpzYFiIqqW5uIRUiPlZJlw=="
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"
+    integrity="sha512-BD6B4tou7H7CWpfaXthxgqwk7kHs/rPDEk9GD/Rvbx0sCOUdqtrvlBP/o64EmdP5lnGOS4j4FTcn0iPJx6bVCw=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %}
