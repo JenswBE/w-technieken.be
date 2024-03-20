@@ -1,7 +1,7 @@
 # Running locally
 
 ```bash
-sudo apt install -y libssl-dev pkg-config
+sudo apt install -y libssl-dev
 cargo install cargo-watch
 cargo watch -x run
 

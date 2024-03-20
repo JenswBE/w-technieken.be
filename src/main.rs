@@ -3,6 +3,7 @@ mod api_client;
 use crate::api_client::{Client, Realisation};
 use askama::Template;
 use dotenv::dotenv;
+use rayon::prelude::*;
 use reqwest::Url;
 use std::path::Path;
 use std::process::{self, Command};
@@ -107,23 +108,31 @@ fn main() {
     )
     .expect("Failed to write index.html");
 
+    let mut asset_download_queue = vec![];
     let path_assets = path_output.join("assets");
     fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
     let path_realisaties = path_output.join("realisaties");
     for realisation in &realisations {
-        // Download asset - Index realisatie
-        client.download_asset(
-            &path_assets,
-            &realisation.main_image,
-            "jpg",
-            Some("index-realisatie"),
-        );
+        // Queue asset download - Index realisatie
+        asset_download_queue.push(DownloadAsset {
+            id: realisation.main_image.clone(),
+            extension: "jpg",
+            key: Some("index-realisatie"),
+        });
 
-        // Download asset - Realisatie
+        // Queue asset download - Realisatie
         if let Some(secondary_images) = &realisation.secondary_images {
             for image_id in secondary_images {
-                client.download_asset(&path_assets, image_id, "jpg", None);
-                client.download_asset(&path_assets, image_id, "jpg", Some("realisatie-thumbnail"));
+                asset_download_queue.push(DownloadAsset {
+                    id: image_id.clone(),
+                    extension: "jpg",
+                    key: Some("realisatie-full"),
+                });
+                asset_download_queue.push(DownloadAsset {
+                    id: image_id.clone(),
+                    extension: "jpg",
+                    key: Some("realisatie-thumbnail"),
+                });
             }
         }
 
@@ -141,6 +150,11 @@ fn main() {
             .expect("Unable to render index template"),
         )
         .expect("Failed to write index.html");
+
+        // Download assets
+        asset_download_queue.par_iter().for_each(|asset| {
+            client.download_asset(&path_assets, &asset.id, &asset.extension, asset.key)
+        })
     }
 }
 
@@ -175,4 +189,10 @@ fn copy_static(source: &Path, target: &Path) -> io::Result<process::Output> {
             target.to_str().unwrap(),
         ])
         .output()
+}
+
+struct DownloadAsset {
+    id: String,
+    extension: &'static str,
+    key: Option<&'static str>,
 }
