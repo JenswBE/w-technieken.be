@@ -16,24 +16,32 @@ const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
 #[template(path = "index.jinja2", ext = "html")]
 struct TemplateIndex<'a> {
     title: String,
-    nav_links: &'a Vec<&'a NavLink<'a>>,
-    current_link: &'a NavLink<'a>,
+    nav_links: &'a Vec<&'a NavLink>,
+    current_link: &'a NavLink,
     realisations: &'a Vec<Realisation>,
+}
+
+#[derive(Template)]
+#[template(path = "over_ons.jinja2", ext = "html")]
+struct TemplateAboutUs<'a> {
+    title: String,
+    nav_links: &'a Vec<&'a NavLink>,
+    current_link: &'a NavLink,
 }
 
 #[derive(Template)]
 #[template(path = "realisaties.jinja2", ext = "html")]
 struct TemplateRealisations<'a> {
     title: String,
-    nav_links: &'a Vec<&'a NavLink<'a>>,
-    current_link: &'a NavLink<'a>,
+    nav_links: &'a Vec<&'a NavLink>,
+    current_link: &'a NavLink,
     realisation: &'a Realisation,
 }
 
-struct NavLink<'a> {
-    name: &'static str,
-    url: &'static str,
-    children: Option<Vec<&'a NavLink<'a>>>,
+struct NavLink {
+    name: String,
+    url: String,
+    children: Option<Vec<NavLink>>,
 }
 
 fn main() {
@@ -64,37 +72,32 @@ fn main() {
 
     // Nav links
     let nav_link_start = NavLink {
-        name: "Start",
-        url: "/",
+        name: "Start".to_string(),
+        url: "/".to_string(),
         children: None,
     };
-    let nav_link_realisaties_aircoheaters = NavLink {
-        name: "Aircoheaters",
-        url: "/realisaties/aircoheaters",
-        children: None,
-    };
-    let nav_link_realisaties_warmtepompen = NavLink {
-        name: "Warmtepompen",
-        url: "/realisaties/warmtepompen",
-        children: None,
-    };
-    let nav_link_realisaties_ventilatie = NavLink {
-        name: "Ventilatie",
-        url: "/realisaties/ventilatie",
+    let nav_link_about_us = NavLink {
+        name: "Over ons".to_string(),
+        url: "/over-ons".to_string(),
         children: None,
     };
     let nav_link_realisaties = NavLink {
-        name: "Realisaties",
-        url: "/realisaties",
-        children: Some(vec![
-            &nav_link_realisaties_aircoheaters,
-            &nav_link_realisaties_warmtepompen,
-            &nav_link_realisaties_ventilatie,
-        ]),
+        name: "Realisaties".to_string(),
+        url: "/realisaties".to_string(),
+        children: Some(
+            realisations
+                .iter()
+                .map(|r| NavLink {
+                    name: r.name.clone(),
+                    url: r.slug.clone(),
+                    children: None,
+                })
+                .collect(),
+        ),
     };
-    let nav_links = vec![&nav_link_start, &nav_link_realisaties];
+    let nav_links = vec![&nav_link_start, &nav_link_about_us, &nav_link_realisaties];
 
-    // Generate templates
+    // Generate index page
     fs::write(
         path_output.join("index.html"),
         TemplateIndex {
@@ -108,6 +111,22 @@ fn main() {
     )
     .expect("Failed to write index.html");
 
+    // Generate "About us" page
+    let path_over_ons = path_output.join("over-ons");
+    fs::create_dir_all(&path_over_ons).expect("Failed to create over-ons dir");
+    fs::write(
+        path_output.join("index.html"),
+        TemplateAboutUs {
+            title: "Over ons".to_string(),
+            nav_links: &nav_links,
+            current_link: &nav_link_about_us,
+        }
+        .render()
+        .expect("Unable to render index template"),
+    )
+    .expect("Failed to write index.html");
+
+    // Generate realisation pages
     let mut asset_download_queue = vec![];
     let path_assets = path_output.join("assets");
     fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
@@ -136,6 +155,7 @@ fn main() {
             }
         }
 
+        // Generate page
         let path_realisation = path_realisaties.join(&realisation.slug);
         fs::create_dir_all(&path_realisation).expect("Failed to create realisation dir");
         fs::write(
@@ -150,12 +170,12 @@ fn main() {
             .expect("Unable to render index template"),
         )
         .expect("Failed to write index.html");
-
-        // Download assets
-        asset_download_queue.par_iter().for_each(|asset| {
-            client.download_asset(&path_assets, &asset.id, &asset.extension, asset.key)
-        })
     }
+
+    // Download assets
+    asset_download_queue.par_iter().for_each(|asset| {
+        client.download_asset(&path_assets, &asset.id, &asset.extension, asset.key, None)
+    })
 }
 
 fn env_var_with_default(name: &'static str, default: &'static str) -> String {
