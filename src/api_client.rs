@@ -1,6 +1,6 @@
 use cynic::QueryBuilder;
 use reqwest::{blocking, header, Url};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::copy;
 use std::path::Path;
 
@@ -55,13 +55,31 @@ impl Client {
         id: &str,
         extension: &str,
         key: Option<&str>,
+        cache_dir: Option<P>,
     ) {
+        // Derive filename and paths
         let filename = format!(
             "{}{}.{}",
             id,
             key.map_or("".to_string(), |k| "-".to_string() + k),
             extension
         );
+        let output_path = output_dir.as_ref().join(&filename);
+        let cache_path = cache_dir.map(|p| p.as_ref().join(&filename));
+
+        // Try get asset from cache if enabled
+        if let Some(cache_path) = &cache_path {
+            if cache_path
+                .try_exists()
+                .expect("Unable to check if validated file exists")
+            {
+                log::info!("Reusing asset {} from cache ...", filename);
+                fs::copy(cache_path, output_path).expect("Failed to copy cached version");
+                return;
+            }
+        }
+
+        // Fetch asset
         let asset_url = self
             .base_url
             .join(&format!("/assets/{}/{}", id, filename))
@@ -80,10 +98,17 @@ impl Client {
             );
             panic!("Failed to fetch asset")
         }
-        let output_path = output_dir.as_ref().join(filename);
-        let mut file = File::create(&output_path)
-            .expect(&format!("Unable to create file: {}", output_path.display()));
-        copy(&mut resp, &mut file).expect("Unable to write asset to file");
+        {
+            let mut file = File::create(&output_path)
+                .expect(&format!("Unable to create file: {}", output_path.display()));
+            copy(&mut resp, &mut file).expect("Unable to write asset to file");
+            file.sync_all().expect("Failed to flush asset file");
+        }
+
+        // Feed cache if enabled
+        if let Some(cache_path) = &cache_path {
+            fs::copy(output_path, cache_path).expect("Failed to copy asset to cache");
+        }
     }
 }
 

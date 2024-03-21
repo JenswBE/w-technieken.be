@@ -56,6 +56,7 @@ fn main() {
     // Collect env vars
     let base_url = env_var_with_default("WTECH_BASE_URL", LOCAL_BASE_URL);
     let api_key = env_var_with_default("WTECH_API_KEY", LOCAL_API_KEY);
+    let path_cache = env::var("WTECH_CACHE_DIR").ok();
 
     // Create HTTP client
     let base_url = Url::parse(&base_url).unwrap();
@@ -63,6 +64,17 @@ fn main() {
 
     // Fetch realisations
     let realisations = client.get_realisations();
+
+    // Prepare asset cache dir
+    let path_cache = path_cache.as_ref().map(Path::new);
+    let path_cache_assets = path_cache.map(|p| p.join("assets"));
+    if let Some(path_cache_assets) = &path_cache_assets {
+        log::info!(
+            "Caching enabled to folder \"{}\"",
+            path_cache.unwrap().display()
+        );
+        fs::create_dir_all(&path_cache_assets).expect("Failed to create assets cache dir");
+    }
 
     // Prepare output dir
     let path_output = Path::new("output");
@@ -89,7 +101,7 @@ fn main() {
                 .iter()
                 .map(|r| NavLink {
                     name: r.name.clone(),
-                    url: r.slug.clone(),
+                    url: "/realisaties/".to_string() + &r.slug,
                     children: None,
                 })
                 .collect(),
@@ -115,7 +127,7 @@ fn main() {
     let path_over_ons = path_output.join("over-ons");
     fs::create_dir_all(&path_over_ons).expect("Failed to create over-ons dir");
     fs::write(
-        path_output.join("index.html"),
+        path_over_ons.join("index.html"),
         TemplateAboutUs {
             title: "Over ons".to_string(),
             nav_links: &nav_links,
@@ -163,7 +175,7 @@ fn main() {
             TemplateRealisations {
                 title: realisation.name.clone(),
                 nav_links: &nav_links,
-                current_link: &nav_link_start,
+                current_link: &nav_link_realisaties,
                 realisation: &realisation,
             }
             .render()
@@ -174,7 +186,13 @@ fn main() {
 
     // Download assets
     asset_download_queue.par_iter().for_each(|asset| {
-        client.download_asset(&path_assets, &asset.id, &asset.extension, asset.key, None)
+        client.download_asset(
+            &path_assets,
+            &asset.id,
+            &asset.extension,
+            asset.key,
+            path_cache_assets.as_ref(),
+        )
     })
 }
 
