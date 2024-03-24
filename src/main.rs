@@ -163,7 +163,7 @@ fn main() {
     fs::create_dir_all(&path_over_ons).expect("Failed to create onze-diensten dir");
     fs::write(
         path_over_ons.join("index.html"),
-        TemplateAboutUs {
+        TemplateOurServices {
             base: TemplateBase {
                 title: "Onze diensten".to_string(),
                 nav_links: &nav_links,
