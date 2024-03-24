@@ -12,30 +12,36 @@ use std::{env, fs, io};
 const LOCAL_BASE_URL: &'static str = "http://localhost:8055";
 const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
 
-#[derive(Template)]
-#[template(path = "index.jinja2", ext = "html")]
-struct TemplateIndex<'a> {
+struct TemplateBase<'a> {
     title: String,
     nav_links: &'a Vec<&'a NavLink>,
     current_link: &'a NavLink,
-    realisations: &'a Vec<Realisation>,
 }
 
 #[derive(Template)]
-#[template(path = "over_ons.jinja2", ext = "html")]
-struct TemplateAboutUs<'a> {
-    title: String,
-    nav_links: &'a Vec<&'a NavLink>,
-    current_link: &'a NavLink,
+#[template(path = "index.jinja2", ext = "html")]
+struct TemplateIndex<'a> {
+    base: TemplateBase<'a>,
+    realisations: &'a Vec<Realisation>,
 }
 
 #[derive(Template)]
 #[template(path = "realisaties.jinja2", ext = "html")]
 struct TemplateRealisations<'a> {
-    title: String,
-    nav_links: &'a Vec<&'a NavLink>,
-    current_link: &'a NavLink,
+    base: TemplateBase<'a>,
     realisation: &'a Realisation,
+}
+
+#[derive(Template)]
+#[template(path = "over_ons.jinja2", ext = "html")]
+struct TemplateAboutUs<'a> {
+    base: TemplateBase<'a>,
+}
+
+#[derive(Template)]
+#[template(path = "onze_diensten.jinja2", ext = "html")]
+struct TemplateOurServices<'a> {
+    base: TemplateBase<'a>,
 }
 
 struct NavLink {
@@ -88,11 +94,6 @@ fn main() {
         url: "/".to_string(),
         children: None,
     };
-    let nav_link_about_us = NavLink {
-        name: "Over ons".to_string(),
-        url: "/over-ons".to_string(),
-        children: None,
-    };
     let nav_link_realisaties = NavLink {
         name: "Realisaties".to_string(),
         url: "/realisaties".to_string(),
@@ -107,15 +108,32 @@ fn main() {
                 .collect(),
         ),
     };
-    let nav_links = vec![&nav_link_start, &nav_link_about_us, &nav_link_realisaties];
+    let nav_link_about_us = NavLink {
+        name: "Over ons".to_string(),
+        url: "/over-ons".to_string(),
+        children: None,
+    };
+    let nav_link_our_services = NavLink {
+        name: "Onze diensten".to_string(),
+        url: "/onze-diensten".to_string(),
+        children: None,
+    };
+    let nav_links = vec![
+        &nav_link_start,
+        &nav_link_realisaties,
+        &nav_link_about_us,
+        &nav_link_our_services,
+    ];
 
     // Generate index page
     fs::write(
         path_output.join("index.html"),
         TemplateIndex {
-            title: "Start".to_string(),
-            nav_links: &nav_links,
-            current_link: &nav_link_start,
+            base: TemplateBase {
+                title: "Start".to_string(),
+                nav_links: &nav_links,
+                current_link: &nav_link_start,
+            },
             realisations: &realisations,
         }
         .render()
@@ -129,9 +147,28 @@ fn main() {
     fs::write(
         path_over_ons.join("index.html"),
         TemplateAboutUs {
-            title: "Over ons".to_string(),
-            nav_links: &nav_links,
-            current_link: &nav_link_about_us,
+            base: TemplateBase {
+                title: "Over ons".to_string(),
+                nav_links: &nav_links,
+                current_link: &nav_link_about_us,
+            },
+        }
+        .render()
+        .expect("Unable to render index template"),
+    )
+    .expect("Failed to write index.html");
+
+    // Generate "About us" page
+    let path_over_ons = path_output.join("onze-diensten");
+    fs::create_dir_all(&path_over_ons).expect("Failed to create onze-diensten dir");
+    fs::write(
+        path_over_ons.join("index.html"),
+        TemplateAboutUs {
+            base: TemplateBase {
+                title: "Onze diensten".to_string(),
+                nav_links: &nav_links,
+                current_link: &nav_link_our_services,
+            },
         }
         .render()
         .expect("Unable to render index template"),
@@ -173,9 +210,11 @@ fn main() {
         fs::write(
             path_realisation.join("index.html"),
             TemplateRealisations {
-                title: realisation.name.clone(),
-                nav_links: &nav_links,
-                current_link: &nav_link_realisaties,
+                base: TemplateBase {
+                    title: realisation.name.clone(),
+                    nav_links: &nav_links,
+                    current_link: &nav_link_realisaties,
+                },
                 realisation: &realisation,
             }
             .render()
