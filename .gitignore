@@ -2,6 +2,7 @@
 .env
 /assets/img/ignored
 /cache
+/directus-sync/*secret*
 /output
 /themes
 

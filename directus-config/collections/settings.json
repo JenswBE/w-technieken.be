@@ -1,0 +1,56 @@
+[
+  {
+    "project_name": "Directus",
+    "project_color": "#6644FF",
+    "public_note": null,
+    "auth_login_attempts": 25,
+    "auth_password_policy": null,
+    "storage_asset_transform": "presets",
+    "storage_asset_presets": [
+      {
+        "key": "index-realisatie",
+        "fit": "cover",
+        "width": 604,
+        "height": 340,
+        "quality": 80,
+        "withoutEnlargement": true,
+        "format": "auto",
+        "transforms": []
+      },
+      {
+        "key": "realisatie-thumbnail",
+        "fit": "cover",
+        "width": 200,
+        "height": 200,
+        "quality": 80,
+        "withoutEnlargement": true,
+        "format": "auto",
+        "transforms": null
+      },
+      {
+        "key": "realisatie-full",
+        "fit": "inside",
+        "width": 1920,
+        "height": 1080,
+        "quality": 80,
+        "withoutEnlargement": true,
+        "format": "auto",
+        "transforms": []
+      }
+    ],
+    "custom_css": null,
+    "storage_default_folder": null,
+    "basemaps": null,
+    "mapbox_key": null,
+    "module_bar": null,
+    "project_descriptor": null,
+    "default_language": "en-US",
+    "custom_aspect_ratios": null,
+    "default_appearance": "auto",
+    "default_theme_light": null,
+    "theme_light_overrides": null,
+    "default_theme_dark": null,
+    "theme_dark_overrides": null,
+    "_syncId": "2628f42b-515c-4c35-a638-2fdf409e3bb9"
+  }
+]
