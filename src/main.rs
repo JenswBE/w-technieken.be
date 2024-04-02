@@ -1,6 +1,6 @@
 mod api_client;
 
-use crate::api_client::{Client, Realisation};
+use crate::api_client::{Client, GeneralSettings, Realisation};
 use askama::Template;
 use dotenv::dotenv;
 use rayon::prelude::*;
@@ -12,36 +12,56 @@ use std::{env, fs, io};
 const LOCAL_BASE_URL: &'static str = "http://localhost:8055";
 const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
 
-struct TemplateBase<'a> {
-    title: String,
+/// Fields present in each template with the same value.
+struct TemplateBaseCommon<'a> {
     nav_links: &'a Vec<&'a NavLink>,
+    email: &'a str,
+    phone_number: &'a str,
+    vat_number: &'a str,
+}
+
+/// Fields present in each template but with a different value.
+struct TemplateBaseSpecific<'a> {
+    title: String,
     current_link: &'a NavLink,
 }
 
 #[derive(Template)]
 #[template(path = "index.jinja2", ext = "html")]
 struct TemplateIndex<'a> {
-    base: TemplateBase<'a>,
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
+    main_image_id: String,
     realisations: &'a Vec<Realisation>,
 }
 
 #[derive(Template)]
 #[template(path = "realisaties.jinja2", ext = "html")]
 struct TemplateRealisations<'a> {
-    base: TemplateBase<'a>,
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
     realisation: &'a Realisation,
 }
 
 #[derive(Template)]
 #[template(path = "over_ons.jinja2", ext = "html")]
 struct TemplateAboutUs<'a> {
-    base: TemplateBase<'a>,
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
 }
 
 #[derive(Template)]
 #[template(path = "onze_diensten.jinja2", ext = "html")]
 struct TemplateOurServices<'a> {
-    base: TemplateBase<'a>,
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
+}
+
+#[derive(Template)]
+#[template(path = "404.jinja2", ext = "html")]
+struct Template404<'a> {
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
 }
 
 struct NavLink {
@@ -68,7 +88,8 @@ fn main() {
     let base_url = Url::parse(&base_url).unwrap();
     let client = Client::build(base_url, &api_key);
 
-    // Fetch realisations
+    // Fetch remote data
+    let general_settings = client.get_general_settings();
     let realisations = client.get_realisations();
 
     // Prepare asset cache dir
@@ -125,15 +146,40 @@ fn main() {
         &nav_link_our_services,
     ];
 
+    // Base template
+    let base_template_common = TemplateBaseCommon {
+        nav_links: &nav_links,
+        email: &general_settings.email,
+        phone_number: &general_settings.phone_number,
+        vat_number: &general_settings.vat_number,
+    };
+
+    // Ensure assets dir exists
+    let path_assets = path_output.join("assets");
+    fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
+
     // Generate index page
+    let index_main_image_id = general_settings
+        .start_image
+        .expect("Start image must be defined in general settings")
+        .id
+        .into_inner();
+    client.download_asset(
+        &path_assets,
+        &index_main_image_id,
+        "jpg",
+        Some("index-main-image"),
+        path_cache_assets.as_ref(),
+    );
     fs::write(
         path_output.join("index.html"),
         TemplateIndex {
-            base: TemplateBase {
+            base_common: &base_template_common,
+            base_specific: TemplateBaseSpecific {
                 title: "Start".to_string(),
-                nav_links: &nav_links,
                 current_link: &nav_link_start,
             },
+            main_image_id: index_main_image_id,
             realisations: &realisations,
         }
         .render()
@@ -147,9 +193,9 @@ fn main() {
     fs::write(
         path_over_ons.join("index.html"),
         TemplateAboutUs {
-            base: TemplateBase {
+            base_common: &base_template_common,
+            base_specific: TemplateBaseSpecific {
                 title: "Over ons".to_string(),
-                nav_links: &nav_links,
                 current_link: &nav_link_about_us,
             },
         }
@@ -164,9 +210,9 @@ fn main() {
     fs::write(
         path_over_ons.join("index.html"),
         TemplateOurServices {
-            base: TemplateBase {
+            base_common: &base_template_common,
+            base_specific: TemplateBaseSpecific {
                 title: "Onze diensten".to_string(),
-                nav_links: &nav_links,
                 current_link: &nav_link_our_services,
             },
         }
@@ -177,8 +223,6 @@ fn main() {
 
     // Generate realisation pages
     let mut asset_download_queue = vec![];
-    let path_assets = path_output.join("assets");
-    fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
     let path_realisaties = path_output.join("realisaties");
     for realisation in &realisations {
         // Queue asset download - Index realisatie
@@ -210,9 +254,9 @@ fn main() {
         fs::write(
             path_realisation.join("index.html"),
             TemplateRealisations {
-                base: TemplateBase {
+                base_common: &base_template_common,
+                base_specific: TemplateBaseSpecific {
                     title: realisation.name.clone(),
-                    nav_links: &nav_links,
                     current_link: &nav_link_realisaties,
                 },
                 realisation: &realisation,
@@ -232,7 +276,22 @@ fn main() {
             asset.key,
             path_cache_assets.as_ref(),
         )
-    })
+    });
+
+    // Generate "404" page
+    fs::write(
+        path_output.join("404.html"),
+        Template404 {
+            base_common: &base_template_common,
+            base_specific: TemplateBaseSpecific {
+                title: "Pagina niet gevonden".to_string(),
+                current_link: &nav_link_start,
+            },
+        }
+        .render()
+        .expect("Unable to render 404 template"),
+    )
+    .expect("Failed to write 404.html");
 }
 
 fn env_var_with_default(name: &'static str, default: &'static str) -> String {

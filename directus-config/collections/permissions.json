@@ -6,11 +6,22 @@
     "permissions": {
       "_and": [
         {
-          "folder": {
-            "name": {
-              "_contains": "Realisaties"
+          "_or": [
+            {
+              "folder": {
+                "name": {
+                  "_contains": "Realisaties"
+                }
+              }
+            },
+            {
+              "folder": {
+                "name": {
+                  "_contains": "General"
+                }
+              }
             }
-          }
+          ]
         }
       ]
     },
@@ -20,6 +31,18 @@
       "*"
     ],
     "_syncId": "9a83d097-be48-4532-99ea-a070b386db8d"
+  },
+  {
+    "role": "6794aa58-b257-44cf-9021-d85804a57044",
+    "collection": "general_settings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "f310c528-d6a1-4b38-bce5-67439338f466"
   },
   {
     "role": "6794aa58-b257-44cf-9021-d85804a57044",
@@ -379,6 +402,42 @@
       "tfa_secret"
     ],
     "_syncId": "0a2deb68-3016-4564-8228-dcbd3fcf8bc4"
+  },
+  {
+    "role": "77d70005-5710-49bd-bb38-4f5964993b5f",
+    "collection": "general_settings",
+    "action": "create",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "89556aa1-ab2f-4547-81d5-1888abb5904d"
+  },
+  {
+    "role": "77d70005-5710-49bd-bb38-4f5964993b5f",
+    "collection": "general_settings",
+    "action": "read",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "24d4aff5-7527-4fae-b75e-6b959921958e"
+  },
+  {
+    "role": "77d70005-5710-49bd-bb38-4f5964993b5f",
+    "collection": "general_settings",
+    "action": "update",
+    "permissions": {},
+    "validation": {},
+    "presets": null,
+    "fields": [
+      "*"
+    ],
+    "_syncId": "3275cbfe-d664-49d1-a72b-9fc60aacdfce"
   },
   {
     "role": "77d70005-5710-49bd-bb38-4f5964993b5f",

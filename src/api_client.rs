@@ -28,17 +28,36 @@ impl Client {
         }
     }
 
+    pub fn get_general_settings(&self) -> GeneralSettings {
+        use cynic::http::ReqwestBlockingExt;
+        let graphql_url = self.base_url.join("/graphql").unwrap();
+        let resp = self
+            .http_client
+            .post(graphql_url)
+            .run_graphql(GeneralSettingsQuery::build(()))
+            .expect("Failed to fetch general settings");
+        if let Some(errors) = resp.errors {
+            for e in errors {
+                log::error!("GraphQL query GeneralSettingsQuery returned error(s): {e}")
+            }
+        };
+        resp.data
+            .expect("No general settings returned")
+            .general_settings
+            .unwrap()
+    }
+
     pub fn get_realisations(&self) -> Vec<Realisation> {
         use cynic::http::ReqwestBlockingExt;
         let graphql_url = self.base_url.join("/graphql").unwrap();
         let resp = self
             .http_client
             .post(graphql_url)
-            .run_graphql(AllRealisations::build(()))
+            .run_graphql(RealisationsQuery::build(()))
             .expect("Failed to fetch realisations");
         if let Some(errors) = resp.errors {
             for e in errors {
-                log::error!("GraphQL query AllRealisations returned error(s): {e}")
+                log::error!("GraphQL query RealisationsQuery returned error(s): {e}")
             }
         };
         resp.data
@@ -118,7 +137,26 @@ mod schema {}
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
-struct AllRealisations {
+pub struct GeneralSettingsQuery {
+    #[cynic(rename = "general_settings")]
+    pub general_settings: Option<GeneralSettings>,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "general_settings")]
+pub struct GeneralSettings {
+    #[cynic(rename = "start_image")]
+    pub start_image: Option<DirectusFiles>,
+    pub email: String,
+    #[cynic(rename = "phone_number")]
+    pub phone_number: String,
+    #[cynic(rename = "vat_number")]
+    pub vat_number: String,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(graphql_type = "Query")]
+struct RealisationsQuery {
     realisations: Vec<Realisations>,
 }
 
@@ -154,7 +192,7 @@ mod tests {
     #[test]
     fn all_realisations_query_graphql_output() {
         use cynic::QueryBuilder;
-        let operation = AllRealisations::build(());
+        let operation = RealisationsQuery::build(());
         insta::assert_snapshot!(operation.query);
     }
 }

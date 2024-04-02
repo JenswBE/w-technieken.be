@@ -36,6 +36,16 @@
         "withoutEnlargement": true,
         "format": "auto",
         "transforms": []
+      },
+      {
+        "key": "index-main-image",
+        "fit": "outside",
+        "width": 1920,
+        "height": 1080,
+        "quality": 80,
+        "withoutEnlargement": true,
+        "format": "auto",
+        "transforms": []
       }
     ],
     "custom_css": null,

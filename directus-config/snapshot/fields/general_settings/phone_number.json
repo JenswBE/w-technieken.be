@@ -19,7 +19,12 @@
     "required": true,
     "sort": 3,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "nl-NL",
+        "translation": "Telefoonnummer"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"
