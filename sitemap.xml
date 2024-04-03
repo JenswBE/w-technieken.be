@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://localhost:8000</loc>
+        <loc>https://w-technieken.be</loc>
     </url>
     <url>
-        <loc>http://localhost:8000/over-ons/</loc>
+        <loc>https://w-technieken.be/over-ons/</loc>
     </url>
     <url>
-        <loc>http://localhost:8000/onze-diensten/</loc>
+        <loc>https://w-technieken.be/onze-diensten/</loc>
     </url>
     <url>
-        <loc>http://localhost:8000/realisaties/aircoheaters/</loc>
+        <loc>https://w-technieken.be/realisaties/aircoheaters/</loc>
     </url>
     <url>
-        <loc>http://localhost:8000/realisaties/ventilatie/</loc>
+        <loc>https://w-technieken.be/realisaties/ventilatie/</loc>
     </url>
     <url>
-        <loc>http://localhost:8000/realisaties/warmtepompen/</loc>
+        <loc>https://w-technieken.be/realisaties/warmtepompen/</loc>
     </url>
 </urlset>
