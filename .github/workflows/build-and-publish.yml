@@ -33,7 +33,7 @@ jobs:
       - name: Generate website
         run: cargo run --verbose
         env:
-          WTECH_BASE_URL: ${{ vars.WTECH_BASE_URL }}
+          WTECH_API_BASE_URL: ${{ vars.WTECH_API_BASE_URL }}
           WTECH_API_KEY: ${{ secrets.WTECH_API_KEY }}
 
       - name: Publish to GitHub Pages
