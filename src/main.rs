@@ -1,15 +1,17 @@
 mod api_client;
+mod renderer;
 
-use crate::api_client::{Client, GeneralSettings, Realisation};
+use crate::api_client::{Client, Realisation};
+use crate::renderer::Renderer;
 use askama::Template;
 use dotenv::dotenv;
-use rayon::prelude::*;
 use reqwest::Url;
 use std::path::Path;
 use std::process::{self, Command};
 use std::{env, fs, io};
 
-const LOCAL_BASE_URL: &'static str = "http://localhost:8055";
+const LOCAL_BASE_URL: &'static str = "http://localhost:8000";
+const LOCAL_API_BASE_URL: &'static str = "http://localhost:8055";
 const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
 
 /// Fields present in each template with the same value.
@@ -27,7 +29,7 @@ struct TemplateBaseSpecific<'a> {
 }
 
 #[derive(Template)]
-#[template(path = "index.jinja2", ext = "html")]
+#[template(path = "index.html.jinja2", ext = "html")]
 struct TemplateIndex<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
@@ -36,7 +38,7 @@ struct TemplateIndex<'a> {
 }
 
 #[derive(Template)]
-#[template(path = "realisaties.jinja2", ext = "html")]
+#[template(path = "realisaties.html.jinja2", ext = "html")]
 struct TemplateRealisations<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
@@ -44,23 +46,22 @@ struct TemplateRealisations<'a> {
 }
 
 #[derive(Template)]
-#[template(path = "over_ons.jinja2", ext = "html")]
+#[template(path = "over_ons.html.jinja2", ext = "html")]
 struct TemplateAboutUs<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
 }
 
 #[derive(Template)]
-#[template(path = "onze_diensten.jinja2", ext = "html")]
+#[template(path = "onze_diensten.html.jinja2", ext = "html")]
 struct TemplateOurServices<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
 }
 
 #[derive(Template)]
-#[template(path = "404.jinja2", ext = "html")]
+#[template(path = "404.html.jinja2", ext = "html")]
 struct Template404<'a> {
-    base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
 }
 
@@ -81,27 +82,17 @@ fn main() {
 
     // Collect env vars
     let base_url = env_var_with_default("WTECH_BASE_URL", LOCAL_BASE_URL);
+    let api_base_url = env_var_with_default("WTECH_API_BASE_URL", LOCAL_API_BASE_URL);
     let api_key = env_var_with_default("WTECH_API_KEY", LOCAL_API_KEY);
     let path_cache = env::var("WTECH_CACHE_DIR").ok();
 
     // Create HTTP client
-    let base_url = Url::parse(&base_url).unwrap();
-    let client = Client::build(base_url, &api_key);
+    let api_base_url = Url::parse(&api_base_url).unwrap();
+    let mut client = Client::build(api_base_url, &api_key);
 
     // Fetch remote data
     let general_settings = client.get_general_settings();
     let realisations = client.get_realisations();
-
-    // Prepare asset cache dir
-    let path_cache = path_cache.as_ref().map(Path::new);
-    let path_cache_assets = path_cache.map(|p| p.join("assets"));
-    if let Some(path_cache_assets) = &path_cache_assets {
-        log::info!(
-            "Caching enabled to folder \"{}\"",
-            path_cache.unwrap().display()
-        );
-        fs::create_dir_all(&path_cache_assets).expect("Failed to create assets cache dir");
-    }
 
     // Prepare output dir
     let path_output = Path::new("output");
@@ -146,6 +137,10 @@ fn main() {
         &nav_link_our_services,
     ];
 
+    // Create renderer
+    let base_url = Url::parse(&base_url).unwrap();
+    let mut renderer = Renderer::new(base_url, path_output);
+
     // Base template
     let base_template_common = TemplateBaseCommon {
         nav_links: &nav_links,
@@ -154,26 +149,16 @@ fn main() {
         vat_number: &general_settings.vat_number,
     };
 
-    // Ensure assets dir exists
-    let path_assets = path_output.join("assets");
-    fs::create_dir_all(&path_assets).expect("Failed to create output assets dir");
-
     // Generate index page
     let index_main_image_id = general_settings
         .start_image
         .expect("Start image must be defined in general settings")
         .id
         .into_inner();
-    client.download_asset(
-        &path_assets,
-        &index_main_image_id,
-        "jpg",
-        Some("index-main-image"),
-        path_cache_assets.as_ref(),
-    );
-    fs::write(
-        path_output.join("index.html"),
-        TemplateIndex {
+    client.queue_asset(index_main_image_id.clone(), "jpg", Some("index-main-image"));
+    renderer.render_page(
+        "index.html",
+        &TemplateIndex {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
                 title: "Start".to_string(),
@@ -184,15 +169,13 @@ fn main() {
         }
         .render()
         .expect("Unable to render index template"),
-    )
-    .expect("Failed to write index.html");
+        Some(""),
+    );
 
     // Generate "About us" page
-    let path_over_ons = path_output.join("over-ons");
-    fs::create_dir_all(&path_over_ons).expect("Failed to create over-ons dir");
-    fs::write(
-        path_over_ons.join("index.html"),
-        TemplateAboutUs {
+    renderer.render_page(
+        "over-ons/index.html",
+        &TemplateAboutUs {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
                 title: "Over ons".to_string(),
@@ -201,15 +184,13 @@ fn main() {
         }
         .render()
         .expect("Unable to render index template"),
-    )
-    .expect("Failed to write index.html");
+        Some("/over-ons/"),
+    );
 
-    // Generate "About us" page
-    let path_over_ons = path_output.join("onze-diensten");
-    fs::create_dir_all(&path_over_ons).expect("Failed to create onze-diensten dir");
-    fs::write(
-        path_over_ons.join("index.html"),
-        TemplateOurServices {
+    // Generate "Our services" page
+    renderer.render_page(
+        "onze-diensten/index.html",
+        &TemplateOurServices {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
                 title: "Onze diensten".to_string(),
@@ -218,42 +199,32 @@ fn main() {
         }
         .render()
         .expect("Unable to render index template"),
-    )
-    .expect("Failed to write index.html");
+        Some("/onze-diensten/"),
+    );
 
     // Generate realisation pages
-    let mut asset_download_queue = vec![];
-    let path_realisaties = path_output.join("realisaties");
     for realisation in &realisations {
         // Queue asset download - Index realisatie
-        asset_download_queue.push(DownloadAsset {
-            id: realisation.main_image.clone(),
-            extension: "jpg",
-            key: Some("index-realisatie"),
-        });
+        client.queue_asset(
+            realisation.main_image.clone(),
+            "jpg",
+            Some("index-realisatie"),
+        );
 
         // Queue asset download - Realisatie
         if let Some(secondary_images) = &realisation.secondary_images {
             for image_id in secondary_images {
-                asset_download_queue.push(DownloadAsset {
-                    id: image_id.clone(),
-                    extension: "jpg",
-                    key: Some("realisatie-full"),
-                });
-                asset_download_queue.push(DownloadAsset {
-                    id: image_id.clone(),
-                    extension: "jpg",
-                    key: Some("realisatie-thumbnail"),
-                });
+                client.queue_asset(image_id.clone(), "jpg", Some("realisatie-full"));
+                client.queue_asset(image_id.clone(), "jpg", Some("realisatie-thumbnail"));
             }
         }
 
         // Generate page
-        let path_realisation = path_realisaties.join(&realisation.slug);
-        fs::create_dir_all(&path_realisation).expect("Failed to create realisation dir");
-        fs::write(
-            path_realisation.join("index.html"),
-            TemplateRealisations {
+        let path_realisation = format!("realisaties/{}/", &realisation.slug);
+        let sitemap_realisation = "/".to_string() + &path_realisation;
+        renderer.render_page(
+            path_realisation + "index.html",
+            &TemplateRealisations {
                 base_common: &base_template_common,
                 base_specific: TemplateBaseSpecific {
                     title: realisation.name.clone(),
@@ -262,27 +233,15 @@ fn main() {
                 realisation: &realisation,
             }
             .render()
-            .expect("Unable to render index template"),
-        )
-        .expect("Failed to write index.html");
+            .expect("Unable to render realisatie template"),
+            Some(&sitemap_realisation),
+        );
     }
 
-    // Download assets
-    asset_download_queue.par_iter().for_each(|asset| {
-        client.download_asset(
-            &path_assets,
-            &asset.id,
-            &asset.extension,
-            asset.key,
-            path_cache_assets.as_ref(),
-        )
-    });
-
     // Generate "404" page
-    fs::write(
-        path_output.join("404.html"),
-        Template404 {
-            base_common: &base_template_common,
+    renderer.render_page(
+        "404.html",
+        &Template404 {
             base_specific: TemplateBaseSpecific {
                 title: "Pagina niet gevonden".to_string(),
                 current_link: &nav_link_start,
@@ -290,8 +249,18 @@ fn main() {
         }
         .render()
         .expect("Unable to render 404 template"),
-    )
-    .expect("Failed to write 404.html");
+        None,
+    );
+
+    // Write robots and sitemap
+    renderer.render_robots_txt();
+    renderer.render_sitemap_xml();
+
+    // Prepare asset cache dir and download queue
+    let path_assets = path_output.join("assets");
+    let path_cache = path_cache.as_ref().map(Path::new);
+    let path_cache_assets = path_cache.map(|p| p.join("assets"));
+    client.download_assets_queue(&path_assets, path_cache_assets.as_ref())
 }
 
 fn env_var_with_default(name: &'static str, default: &'static str) -> String {
@@ -325,10 +294,4 @@ fn copy_static(source: &Path, target: &Path) -> io::Result<process::Output> {
             target.to_str().unwrap(),
         ])
         .output()
-}
-
-struct DownloadAsset {
-    id: String,
-    extension: &'static str,
-    key: Option<&'static str>,
 }

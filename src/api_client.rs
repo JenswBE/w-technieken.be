@@ -1,4 +1,5 @@
 use cynic::QueryBuilder;
+use rayon::prelude::*;
 use reqwest::{blocking, header, Url};
 use std::fs::{self, File};
 use std::io::copy;
@@ -7,6 +8,13 @@ use std::path::Path;
 pub struct Client {
     http_client: blocking::Client,
     base_url: Url,
+    assets_queue: Vec<Asset>,
+}
+
+struct Asset {
+    id: String,
+    extension: &'static str,
+    key: Option<&'static str>,
 }
 
 impl Client {
@@ -25,6 +33,7 @@ impl Client {
         Client {
             http_client,
             base_url,
+            assets_queue: vec![],
         }
     }
 
@@ -68,7 +77,36 @@ impl Client {
             .collect()
     }
 
-    pub fn download_asset<P: AsRef<Path>>(
+    pub fn queue_asset(&mut self, id: String, extension: &'static str, key: Option<&'static str>) {
+        self.assets_queue.push(Asset { id, extension, key })
+    }
+
+    pub fn download_assets_queue<P: AsRef<Path> + Sync>(
+        &self,
+        output_dir: P,
+        cache_dir: Option<P>,
+    ) {
+        fs::create_dir_all(&output_dir).expect("Failed to create output assets dir");
+        if let Some(path_cache_assets) = &cache_dir {
+            log::info!(
+                "Caching enabled to folder \"{}\"",
+                cache_dir.as_ref().unwrap().as_ref().display()
+            );
+            fs::create_dir_all(&path_cache_assets).expect("Failed to create assets cache dir");
+        }
+
+        self.assets_queue.par_iter().for_each(|asset| {
+            self.download_asset(
+                output_dir.as_ref(),
+                &asset.id,
+                &asset.extension,
+                asset.key,
+                cache_dir.as_ref().map(|d| d.as_ref()),
+            )
+        });
+    }
+
+    fn download_asset<P: AsRef<Path>>(
         &self,
         output_dir: P,
         id: &str,
