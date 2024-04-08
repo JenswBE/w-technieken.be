@@ -1,5 +1,6 @@
 name: Build and publish
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -38,6 +39,7 @@ jobs:
           WTECH_API_KEY: ${{ secrets.WTECH_API_KEY }}
 
       - name: Publish to GitHub Pages
+        if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
