@@ -24,8 +24,9 @@ struct TemplateBaseCommon<'a> {
 
 /// Fields present in each template but with a different value.
 struct TemplateBaseSpecific<'a> {
-    title: String,
+    canonical_url: Option<&'a str>,
     current_link: &'a NavLink,
+    title: String,
 }
 
 #[derive(Template)]
@@ -139,7 +140,7 @@ fn main() {
 
     // Create renderer
     let base_url = Url::parse(&base_url).unwrap();
-    let mut renderer = Renderer::new(base_url, path_output);
+    let mut renderer = Renderer::new(base_url.clone(), path_output);
 
     // Base template
     let base_template_common = TemplateBaseCommon {
@@ -156,50 +157,56 @@ fn main() {
         .id
         .into_inner();
     client.queue_asset(index_main_image_id.clone(), "jpg", Some("index-main-image"));
+    let sitemap_url = derive_sitemap_url(&base_url, "");
     renderer.render_page(
         "index.html",
         &TemplateIndex {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
-                title: "Start".to_string(),
+                canonical_url: Some(&sitemap_url),
                 current_link: &nav_link_start,
+                title: "Start".to_string(),
             },
             main_image_id: index_main_image_id,
             realisations: &realisations,
         }
         .render()
         .expect("Unable to render index template"),
-        Some(""),
+        Some(sitemap_url),
     );
 
     // Generate "About us" page
+    let sitemap_url = derive_sitemap_url(&base_url, "/over-ons/");
     renderer.render_page(
         "over-ons/index.html",
         &TemplateAboutUs {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
-                title: "Over ons".to_string(),
+                canonical_url: Some(&sitemap_url),
                 current_link: &nav_link_about_us,
+                title: "Over ons".to_string(),
             },
         }
         .render()
         .expect("Unable to render index template"),
-        Some("/over-ons/"),
+        Some(sitemap_url),
     );
 
     // Generate "Our services" page
+    let sitemap_url = derive_sitemap_url(&base_url, "/onze-diensten/");
     renderer.render_page(
         "onze-diensten/index.html",
         &TemplateOurServices {
             base_common: &base_template_common,
             base_specific: TemplateBaseSpecific {
-                title: "Onze diensten".to_string(),
+                canonical_url: Some(&sitemap_url),
                 current_link: &nav_link_our_services,
+                title: "Onze diensten".to_string(),
             },
         }
         .render()
         .expect("Unable to render index template"),
-        Some("/onze-diensten/"),
+        Some(sitemap_url),
     );
 
     // Generate realisation pages
@@ -222,19 +229,21 @@ fn main() {
         // Generate page
         let path_realisation = format!("realisaties/{}/", &realisation.slug);
         let sitemap_realisation = "/".to_string() + &path_realisation;
+        let sitemap_url = derive_sitemap_url(&base_url, &sitemap_realisation);
         renderer.render_page(
             path_realisation + "index.html",
             &TemplateRealisations {
                 base_common: &base_template_common,
                 base_specific: TemplateBaseSpecific {
-                    title: realisation.name.clone(),
+                    canonical_url: Some(&sitemap_url),
                     current_link: &nav_link_realisaties,
+                    title: realisation.name.clone(),
                 },
                 realisation: &realisation,
             }
             .render()
             .expect("Unable to render realisatie template"),
-            Some(&sitemap_realisation),
+            Some(sitemap_url),
         );
     }
 
@@ -243,8 +252,9 @@ fn main() {
         "404.html",
         &Template404 {
             base_specific: TemplateBaseSpecific {
-                title: "Pagina niet gevonden".to_string(),
+                canonical_url: None,
                 current_link: &nav_link_start,
+                title: "Pagina niet gevonden".to_string(),
             },
         }
         .render()
@@ -294,4 +304,21 @@ fn copy_static(source: &Path, target: &Path) -> io::Result<process::Output> {
             target.to_str().unwrap(),
         ])
         .output()
+}
+
+fn derive_sitemap_url<'a>(base_url: &Url, path: &'a str) -> String {
+    if path == "" {
+        // Seems reqwest.Url always forces at least the root path "/".
+        // So, trimming the trailing slash in case provided sitemap URL is empty.
+        base_url
+            .to_string()
+            .strip_suffix(base_url.path())
+            .unwrap()
+            .to_string()
+    } else {
+        base_url
+            .join(path)
+            .expect("Unable to join sitemap URL with base URL")
+            .to_string()
+    }
 }

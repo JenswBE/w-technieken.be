@@ -34,7 +34,7 @@ impl<'a> Renderer<'a> {
         &mut self,
         path: P,
         content: &str,
-        sitemap_url: Option<&str>,
+        sitemap_url: Option<String>,
     ) {
         let output_path = self.output_path.join(path);
         let output_dir = output_path.parent().unwrap();
@@ -42,20 +42,7 @@ impl<'a> Renderer<'a> {
         fs::write(output_path, content).expect("Failed to write rendered template to file");
 
         if let Some(sitemap_url) = sitemap_url {
-            self.sitemap_urls.push(if sitemap_url == "" {
-                // Seems reqwest.Url always forces at least the root path "/".
-                // So, trimming the trailing slash in case provided sitemap URL is empty.
-                self.base_url
-                    .to_string()
-                    .strip_suffix(self.base_url.path())
-                    .unwrap()
-                    .to_string()
-            } else {
-                self.base_url
-                    .join(sitemap_url)
-                    .expect("Unable to join sitemap URL with base URL")
-                    .to_string()
-            })
+            self.sitemap_urls.push(sitemap_url.to_string());
         }
     }
 
