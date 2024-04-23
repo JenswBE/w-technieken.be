@@ -2,6 +2,8 @@
 
 ```bash
 # Start Directus
+podman compose pull
+podman compose build --pull
 podman compose up -d
 
 # Start Directus again
@@ -45,5 +47,5 @@ npx directus-sync push -c directus-sync/prod.secret.js
 
 ```bash
 cargo install --locked cynic-cli
-cynic introspect -H 'Authorization: Bearer MfoD5hw-BJbRbv7qUo4JU0zzxikOckJD' 'http://localhost:8055/graphql' -o schemas/directus.graphql
+cynic introspect -H 'Authorization: Bearer qbwdUtW85SSl4vpmsu6qY2Yt5x4U4OJV' 'http://localhost:8055/graphql' -o schemas/directus.graphql
 ```

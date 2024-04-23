@@ -61,6 +61,9 @@
     "theme_light_overrides": null,
     "default_theme_dark": null,
     "theme_dark_overrides": null,
+    "report_error_url": null,
+    "report_bug_url": null,
+    "report_feature_url": null,
     "_syncId": "2628f42b-515c-4c35-a638-2fdf409e3bb9"
   }
 ]

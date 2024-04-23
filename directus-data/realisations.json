@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "sort": 1,
+    "name": "Aircoheaters",
+    "slug": "aircoheaters",
+    "main_image": "c1eb4e2d-dcad-4ccf-9172-d372b5a20b6a",
+    "slogan": "Koud in de zomer en warm in de winter!"
+  },
+  {
+    "id": 2,
+    "sort": 2,
+    "name": "Ventilatie",
+    "slug": "ventilatie",
+    "main_image": "2ba0bbcd-8537-467b-9d45-849d29833476",
+    "slogan": "Efficiënt frisse lucht in huis."
+  },
+  {
+    "id": 3,
+    "sort": 3,
+    "name": "Warmtepompen",
+    "slug": "warmtepompen",
+    "main_image": "f607515a-b3ad-47f3-9620-751b881adadc",
+    "slogan": "Verwarmen op een ecologische manier."
+  }
+]

@@ -12,7 +12,7 @@ use std::{env, fs, io};
 
 const LOCAL_BASE_URL: &'static str = "http://localhost:8000";
 const LOCAL_API_BASE_URL: &'static str = "http://localhost:8055";
-const LOCAL_API_KEY: &'static str = "iMrfmSbhlhA-fagQ5DB7T0_8TbqkWmBY";
+const LOCAL_API_KEY: &'static str = "cm6y72z21fwpDWgBvi17zLLYjLSP6oC1";
 
 /// Fields present in each template with the same value.
 struct TemplateBaseCommon<'a> {
@@ -58,6 +58,14 @@ struct TemplateAboutUs<'a> {
 struct TemplateOurServices<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
+}
+
+#[derive(Template)]
+#[template(path = "algemene_voorwaarden.html.jinja2", ext = "html")]
+struct TemplateTermsAndConditions<'a> {
+    base_common: &'a TemplateBaseCommon<'a>,
+    base_specific: TemplateBaseSpecific<'a>,
+    terms_and_conditions: String,
 }
 
 #[derive(Template)]
@@ -219,11 +227,9 @@ fn main() {
         );
 
         // Queue asset download - Realisatie
-        if let Some(secondary_images) = &realisation.secondary_images {
-            for image_id in secondary_images {
-                client.queue_asset(image_id.clone(), "jpg", Some("realisatie-full"));
-                client.queue_asset(image_id.clone(), "jpg", Some("realisatie-thumbnail"));
-            }
+        for image_id in realisation.secondary_images.iter() {
+            client.queue_asset(image_id.clone(), "jpg", Some("realisatie-full"));
+            client.queue_asset(image_id.clone(), "jpg", Some("realisatie-thumbnail"));
         }
 
         // Generate page
@@ -246,6 +252,24 @@ fn main() {
             Some(sitemap_url),
         );
     }
+
+    // Generate "Terms and Conditions" page
+    let sitemap_url = derive_sitemap_url(&base_url, "/algemene-voorwaarden/");
+    renderer.render_page(
+        "algemene-voorwaarden/index.html",
+        &TemplateTermsAndConditions {
+            base_common: &base_template_common,
+            base_specific: TemplateBaseSpecific {
+                canonical_url: Some(&sitemap_url),
+                current_link: &nav_link_start,
+                title: "Algemene voorwaarden".to_string(),
+            },
+            terms_and_conditions: general_settings.terms_and_conditions,
+        }
+        .render()
+        .expect("Unable to render terms and conditions template"),
+        Some(sitemap_url),
+    );
 
     // Generate "404" page
     renderer.render_page(

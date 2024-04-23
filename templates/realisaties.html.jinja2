@@ -15,21 +15,25 @@
         {% if realisation.slogan.is_some() %}
         <div class="col-12">{{ realisation.slogan.as_ref().unwrap() }}</div>
         {% endif %}
+        {% if ! realisation.secondary_images.is_empty() %}
         <div class="col-12 pt-4">
             <p class="fw-light">
                 Klik op de voorbeelden om de volledige foto te zien.
             </p>
         </div>
+        {% endif %}
     </div>
     <div class="row g-4">
-        {% if realisation.secondary_images.is_some() %}
-        {% for image_id in realisation.secondary_images.as_ref().unwrap() %}
+        {% if ! realisation.secondary_images.is_empty() %}
+        {% for image_id in realisation.secondary_images %}
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
             <a data-fslightbox href="/assets/{{ image_id }}-realisatie-full.jpg">
                 <img src="/assets/{{ image_id }}-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         {% endfor %}
+        {% else %}
+        <p class="pt-5">Er zijn helaas nog geen foto&apos;s in deze categorie.</p>
         {% endif %}
     </div>
 </div>

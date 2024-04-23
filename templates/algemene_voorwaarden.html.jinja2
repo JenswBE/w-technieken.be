@@ -1,0 +1,12 @@
+{% extends "base.html.jinja2" %}
+
+{% block base_content %}
+<div class="container pt-3 pb-5">
+    <div class="row">
+        <div class="col-12 pt-3">
+            <h1>Algemene voorwaarden</h1>
+            {{ terms_and_conditions|safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

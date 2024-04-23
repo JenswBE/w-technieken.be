@@ -184,42 +184,44 @@ pub struct GeneralSettingsQuery {
 #[cynic(graphql_type = "general_settings")]
 pub struct GeneralSettings {
     #[cynic(rename = "start_image")]
-    pub start_image: Option<DirectusFiles>,
+    pub start_image: Option<DirectusFile>,
     pub email: String,
     #[cynic(rename = "phone_number")]
     pub phone_number: String,
     #[cynic(rename = "vat_number")]
     pub vat_number: String,
+    #[cynic(rename = "terms_and_conditions")]
+    pub terms_and_conditions: String,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Query")]
 struct RealisationsQuery {
-    realisations: Vec<Realisations>,
+    realisations: Vec<ApiRealisation>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations")]
-struct Realisations {
+struct ApiRealisation {
     name: String,
     slogan: Option<String>,
     slug: String,
     #[cynic(rename = "main_image")]
-    pub main_image: Option<DirectusFiles>,
-    #[cynic(rename = "additional_images")]
-    pub additional_images: Option<Vec<Option<RealisationsFiles>>>,
+    pub main_image: Option<DirectusFile>,
+    #[cynic(rename = "additional_images", flatten)]
+    pub additional_images: Vec<RealisationsFile>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "realisations_files")]
-pub struct RealisationsFiles {
+pub struct RealisationsFile {
     #[cynic(rename = "directus_files_id")]
-    pub directus_files_id: Option<DirectusFiles>,
+    pub directus_files_id: Option<DirectusFile>,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "directus_files")]
-pub struct DirectusFiles {
+pub struct DirectusFile {
     pub id: cynic::Id,
 }
 
@@ -240,11 +242,11 @@ pub struct Realisation {
     pub slug: String,
     pub slogan: Option<String>,
     pub main_image: String,
-    pub secondary_images: Option<Vec<String>>,
+    pub secondary_images: Vec<String>,
 }
 
-impl From<Realisations> for Realisation {
-    fn from(item: Realisations) -> Self {
+impl From<ApiRealisation> for Realisation {
+    fn from(item: ApiRealisation) -> Self {
         Self {
             name: item.name,
             slug: item.slug,
@@ -254,18 +256,17 @@ impl From<Realisations> for Realisation {
                 .expect("Realisation must have a main image")
                 .id
                 .into_inner(),
-            secondary_images: item.additional_images.map(|images| {
-                images
-                    .into_iter()
-                    .map(|file| {
-                        file.expect("Additional image file cannot be None")
-                            .directus_files_id
-                            .expect("Additional image file must have Directus file ID")
-                            .id
-                            .into_inner()
-                    })
-                    .collect()
-            }),
+            secondary_images: item
+                .additional_images
+                .into_iter()
+                .map(|image| {
+                    image
+                        .directus_files_id
+                        .expect("Additional image file must have Directus file ID")
+                        .id
+                        .into_inner()
+                })
+                .collect(),
         }
     }
 }

@@ -25,7 +25,7 @@
       }
     ],
     "unarchive_value": null,
-    "versioning": true
+    "versioning": false
   },
   "schema": {
     "name": "general_settings"
