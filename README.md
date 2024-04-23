@@ -1,7 +1,21 @@
 # Running locally
 
 ```bash
-sudo apt install -y libssl-dev
+# Start Directus
+podman compose up -d
+
+# Start Directus again
+# Podman Compose doesn't consider condition "service_healthy".
+# Therefore, Directus tries to start before DB is healthy and fails to start.
+# See https://github.com/containers/podman-compose/issues/866 for more info
+podman compose restart directus
+
+# Sync collections and data
+npx directus-sync push -c directus-sync/local.js
+./directus-data/push.sh
+
+# Run static site generator
+sudo apt install -y libssl-dev pkg-config
 cargo install cargo-watch
 cargo watch -x run
 
