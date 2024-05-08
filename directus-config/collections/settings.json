@@ -64,6 +64,10 @@
     "report_error_url": null,
     "report_bug_url": null,
     "report_feature_url": null,
+    "public_registration": false,
+    "public_registration_verify_email": true,
+    "public_registration_role": null,
+    "public_registration_email_filter": null,
     "_syncId": "2628f42b-515c-4c35-a638-2fdf409e3bb9"
   }
 ]

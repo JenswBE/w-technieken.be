@@ -1,4 +1,6 @@
 type Query {
+  general_settings(version: String): general_settings
+  general_settings_by_version(version: String!): version_general_settings
   realisations(
     filter: realisations_filter
     sort: [String]
@@ -37,13 +39,13 @@ type Query {
     sort: [String]
   ): [realisations_files_aggregated!]!
   realisations_files_by_version(version: String!, id: ID!): version_realisations_files
-  general_settings(version: String): general_settings
-  general_settings_by_version(version: String!): version_general_settings
 }
 
-type realisations {
+type general_settings {
+  email: String!
   id: ID!
-  main_image(
+  phone_number: String!
+  start_image(
     filter: directus_files_filter
     sort: [String]
     limit: Int
@@ -51,22 +53,8 @@ type realisations {
     page: Int
     search: String
   ): directus_files
-  name: String!
-  slogan: String
-  """
-  Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
-  """
-  slug: String!
-  sort: Int
-  additional_images(
-    filter: realisations_files_filter
-    sort: [String]
-    limit: Int
-    offset: Int
-    page: Int
-    search: String
-  ): [realisations_files]
-  additional_images_func: count_functions
+  terms_and_conditions: String!
+  vat_number: String!
 }
 
 type directus_files {
@@ -248,6 +236,46 @@ input count_function_filter_operators {
   count: number_filter_operators
 }
 
+"""
+
+"""
+type version_general_settings {
+  email: String!
+  id: ID!
+  phone_number: String!
+  start_image: JSON
+  terms_and_conditions: String!
+  vat_number: String!
+}
+
+type realisations {
+  id: ID!
+  main_image(
+    filter: directus_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): directus_files
+  name: String!
+  slogan: String
+  """
+  Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
+  """
+  slug: String!
+  sort: Int
+  additional_images(
+    filter: realisations_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): [realisations_files]
+  additional_images_func: count_functions
+}
+
 type realisations_files {
   directus_files_id(
     filter: directus_files_filter
@@ -378,39 +406,11 @@ type version_realisations_files {
   sort: Int
 }
 
-type general_settings {
-  email: String!
-  id: ID!
-  phone_number: String!
-  start_image(
-    filter: directus_files_filter
-    sort: [String]
-    limit: Int
-    offset: Int
-    page: Int
-    search: String
-  ): directus_files
-  vat_number: String!
-  terms_and_conditions: String!
-}
-
-"""
-
-"""
-type version_general_settings {
-  email: String!
-  id: ID!
-  phone_number: String!
-  start_image: JSON
-  vat_number: String!
-  terms_and_conditions: String
-}
-
 type Subscription {
   directus_files_mutated(event: EventEnum): directus_files_mutated
+  general_settings_mutated(event: EventEnum): general_settings_mutated
   realisations_mutated(event: EventEnum): realisations_mutated
   realisations_files_mutated(event: EventEnum): realisations_files_mutated
-  general_settings_mutated(event: EventEnum): general_settings_mutated
 }
 
 type directus_files_mutated {
@@ -425,6 +425,12 @@ enum EventEnum {
   delete
 }
 
+type general_settings_mutated {
+  key: ID!
+  event: EventEnum
+  data: general_settings
+}
+
 type realisations_mutated {
   key: ID!
   event: EventEnum
@@ -435,11 +441,5 @@ type realisations_files_mutated {
   key: ID!
   event: EventEnum
   data: realisations_files
-}
-
-type general_settings_mutated {
-  key: ID!
-  event: EventEnum
-  data: general_settings
 }
 
