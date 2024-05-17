@@ -13,7 +13,8 @@
     "interface": "input",
     "note": null,
     "options": {
-      "iconLeft": "finance_chip"
+      "iconLeft": "finance_chip",
+      "trim": true
     },
     "readonly": false,
     "required": true,

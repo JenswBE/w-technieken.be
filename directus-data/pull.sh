@@ -43,7 +43,7 @@ pull_collection "flow_debounce"
 pull_collection "realisations" "id,sort,name,slug,main_image,slogan"
 pull_collection "realisations_files"
 
-# Fetch singletons (import only support arrays)
+# Fetch singletons (import only supports arrays)
 pull_singleton () {
   local SINGLETON_NAME="$1"
   local FIELDS_QUERY="$(derive_fields_query "${2:-}")"

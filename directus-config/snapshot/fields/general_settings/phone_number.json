@@ -13,7 +13,8 @@
     "interface": "input",
     "note": null,
     "options": {
-      "iconLeft": "phone_in_talk"
+      "iconLeft": "phone_in_talk",
+      "trim": true
     },
     "readonly": false,
     "required": true,
