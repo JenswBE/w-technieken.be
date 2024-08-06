@@ -143,29 +143,29 @@
         </div>
         
     </div>
-    <div class="row g-4">
+    <div class="row g-4 gallery">
         
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/30c9c322-0d77-4653-9ab8-8734cd7d8b4a-realisatie-full.jpg">
+            <a href="/assets/30c9c322-0d77-4653-9ab8-8734cd7d8b4a-realisatie-full.jpg">
                 <img src="/assets/30c9c322-0d77-4653-9ab8-8734cd7d8b4a-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/da6cf840-1a5d-4b8b-bbbe-de6463ec7648-realisatie-full.jpg">
+            <a href="/assets/da6cf840-1a5d-4b8b-bbbe-de6463ec7648-realisatie-full.jpg">
                 <img src="/assets/da6cf840-1a5d-4b8b-bbbe-de6463ec7648-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/7222ad27-ef98-4b5a-acc4-31c7a582c642-realisatie-full.jpg">
+            <a href="/assets/7222ad27-ef98-4b5a-acc4-31c7a582c642-realisatie-full.jpg">
                 <img src="/assets/7222ad27-ef98-4b5a-acc4-31c7a582c642-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/585e1a9f-14f1-434f-8fab-a242edaefee3-realisatie-full.jpg">
+            <a href="/assets/585e1a9f-14f1-434f-8fab-a242edaefee3-realisatie-full.jpg">
                 <img src="/assets/585e1a9f-14f1-434f-8fab-a242edaefee3-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
@@ -222,9 +222,33 @@
         src="//stats.w-technieken.be/count.js"></script>
 
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"
-    integrity="sha512-BD6B4tou7H7CWpfaXthxgqwk7kHs/rPDEk9GD/Rvbx0sCOUdqtrvlBP/o64EmdP5lnGOS4j4FTcn0iPJx6bVCw=="
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.css"
+    integrity="sha512-moe+oG7IXFdP2RtdYj/6jR71QHaAAtMJ6duaxkoVOspUyzFIFSozX1+dQmpf1DHD7NzkyHzEPBB1Zs3joDt4QQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    .sl-overlay {
+        background: black !important;
+    }
+
+    .sl-close,
+    .sl-counter,
+    .sl-navigation button {
+        color: white !important;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.js"
+    integrity="sha512-Vtot07oogPy4e0JzAfUgyvia0fATgR1PWWNG89EeQgPXmaIhjGQIFijUVxRn0TScCMCH57Y7eJSixmYYDJkJ1A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var lightbox = new SimpleLightbox('.gallery a', {
+        animationSpeed: 75,
+        captions: false,
+        fadeSpeed: 150,
+        fileExt: false,
+        overlayOpacity: 0.85,
+        swipeClose: false,
+    });
+</script>
 
 </body>
 

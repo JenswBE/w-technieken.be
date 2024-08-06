@@ -143,47 +143,47 @@
         </div>
         
     </div>
-    <div class="row g-4">
+    <div class="row g-4 gallery">
         
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/2ba0bbcd-8537-467b-9d45-849d29833476-realisatie-full.jpg">
+            <a href="/assets/2ba0bbcd-8537-467b-9d45-849d29833476-realisatie-full.jpg">
                 <img src="/assets/2ba0bbcd-8537-467b-9d45-849d29833476-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/2fcc101a-c1ba-4218-9d3d-48353852d633-realisatie-full.jpg">
+            <a href="/assets/2fcc101a-c1ba-4218-9d3d-48353852d633-realisatie-full.jpg">
                 <img src="/assets/2fcc101a-c1ba-4218-9d3d-48353852d633-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/1b4ba07b-2932-48be-9a90-38a8f5a6bfb5-realisatie-full.jpg">
+            <a href="/assets/1b4ba07b-2932-48be-9a90-38a8f5a6bfb5-realisatie-full.jpg">
                 <img src="/assets/1b4ba07b-2932-48be-9a90-38a8f5a6bfb5-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/a7d0028f-ccec-46da-a568-4e3bac6ad9f0-realisatie-full.jpg">
+            <a href="/assets/a7d0028f-ccec-46da-a568-4e3bac6ad9f0-realisatie-full.jpg">
                 <img src="/assets/a7d0028f-ccec-46da-a568-4e3bac6ad9f0-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/fd7dbba7-2acf-420e-8de2-c39207de246c-realisatie-full.jpg">
+            <a href="/assets/fd7dbba7-2acf-420e-8de2-c39207de246c-realisatie-full.jpg">
                 <img src="/assets/fd7dbba7-2acf-420e-8de2-c39207de246c-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/aeac0a18-ee94-41ba-956e-54a90495db0e-realisatie-full.jpg">
+            <a href="/assets/aeac0a18-ee94-41ba-956e-54a90495db0e-realisatie-full.jpg">
                 <img src="/assets/aeac0a18-ee94-41ba-956e-54a90495db0e-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
         
         <div class="col-6 col-sm-4 col-md-3 col-xl-2 text-center">
-            <a data-fslightbox href="/assets/59bdcc1c-0731-4a66-9151-ceb5de497eb3-realisatie-full.jpg">
+            <a href="/assets/59bdcc1c-0731-4a66-9151-ceb5de497eb3-realisatie-full.jpg">
                 <img src="/assets/59bdcc1c-0731-4a66-9151-ceb5de497eb3-realisatie-thumbnail.jpg" class="img-fluid">
             </a>
         </div>
@@ -240,9 +240,33 @@
         src="//stats.w-technieken.be/count.js"></script>
 
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"
-    integrity="sha512-BD6B4tou7H7CWpfaXthxgqwk7kHs/rPDEk9GD/Rvbx0sCOUdqtrvlBP/o64EmdP5lnGOS4j4FTcn0iPJx6bVCw=="
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.css"
+    integrity="sha512-moe+oG7IXFdP2RtdYj/6jR71QHaAAtMJ6duaxkoVOspUyzFIFSozX1+dQmpf1DHD7NzkyHzEPBB1Zs3joDt4QQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    .sl-overlay {
+        background: black !important;
+    }
+
+    .sl-close,
+    .sl-counter,
+    .sl-navigation button {
+        color: white !important;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.js"
+    integrity="sha512-Vtot07oogPy4e0JzAfUgyvia0fATgR1PWWNG89EeQgPXmaIhjGQIFijUVxRn0TScCMCH57Y7eJSixmYYDJkJ1A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var lightbox = new SimpleLightbox('.gallery a', {
+        animationSpeed: 75,
+        captions: false,
+        fadeSpeed: 150,
+        fileExt: false,
+        overlayOpacity: 0.85,
+        swipeClose: false,
+    });
+</script>
 
 </body>
 
