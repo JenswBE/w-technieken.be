@@ -43,28 +43,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.css"
     integrity="sha512-moe+oG7IXFdP2RtdYj/6jR71QHaAAtMJ6duaxkoVOspUyzFIFSozX1+dQmpf1DHD7NzkyHzEPBB1Zs3joDt4QQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-<style>
-    .sl-overlay {
-        background: black !important;
-    }
-
-    .sl-close,
-    .sl-counter,
-    .sl-navigation button {
-        color: white !important;
-    }
-</style>
+<link rel="stylesheet" href="/lightbox.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.3/simple-lightbox.min.js"
     integrity="sha512-Vtot07oogPy4e0JzAfUgyvia0fATgR1PWWNG89EeQgPXmaIhjGQIFijUVxRn0TScCMCH57Y7eJSixmYYDJkJ1A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script>
-    var lightbox = new SimpleLightbox('.gallery a', {
-        animationSpeed: 75,
-        captions: false,
-        fadeSpeed: 150,
-        fileExt: false,
-        overlayOpacity: 0.85,
-        swipeClose: false,
-    });
-</script>
+<script src="/lightbox.js"></script>
 {% endblock %}

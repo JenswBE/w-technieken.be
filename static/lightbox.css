@@ -1,0 +1,9 @@
+.sl-overlay {
+  background: black !important;
+}
+
+.sl-close,
+.sl-counter,
+.sl-navigation button {
+  color: white !important;
+}

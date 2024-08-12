@@ -15,13 +15,13 @@ env:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       # From https://github.com/actions/cache/blob/main/examples.md#rust---cargo
-      - uses: actions/cache@v4
+      - name: Setup cache
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -38,9 +38,19 @@ jobs:
           WTECH_API_BASE_URL: ${{ vars.WTECH_API_BASE_URL }}
           WTECH_API_KEY: ${{ secrets.WTECH_API_KEY }}
 
-      - name: Publish to GitHub Pages
+      - name: Publish to VPS
         if: github.event_name != 'pull_request'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./output
+        run: |
+          # Trust SSH host keys
+          mkdir -p ~/.ssh/
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          curl 'https://raw.githubusercontent.com/JenswBE/setup/main/server/files/po/rsyncd-public-keys.txt' >> ~/.ssh/known_hosts
+
+          # Setup SSH key
+          touch ssh_key
+          chmod 600 ssh_key
+          echo '${{ secrets.SSH_KEY }}' > ssh_key
+
+          # Sync generated files
+          rsync --verbose --archive --delete --rsh='ssh -p ${{ vars.SSH_PORT }} -i ssh_key' output/ ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/
