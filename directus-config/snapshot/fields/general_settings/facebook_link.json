@@ -1,52 +1,49 @@
 {
   "collection": "general_settings",
-  "field": "start_image",
-  "type": "uuid",
+  "field": "facebook_link",
+  "type": "string",
   "meta": {
     "collection": "general_settings",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "start_image",
+    "field": "facebook_link",
     "group": null,
     "hidden": false,
-    "interface": "file-image",
+    "interface": "input",
     "note": null,
     "options": {
-      "crop": false,
-      "folder": "88e7511f-b0e2-4b52-91e6-f2e8d905d3bc"
+      "trim": true
     },
     "readonly": false,
-    "required": false,
-    "sort": 9,
-    "special": [
-      "file"
-    ],
+    "required": true,
+    "sort": 7,
+    "special": null,
     "translations": [
       {
         "language": "nl-NL",
-        "translation": "Foto op startpagina"
+        "translation": "Link naar Facebook-profiel"
       }
     ],
     "validation": null,
     "validation_message": null,
-    "width": "full"
+    "width": "half"
   },
   "schema": {
-    "name": "start_image",
+    "name": "facebook_link",
     "table": "general_settings",
-    "data_type": "uuid",
+    "data_type": "character varying",
     "default_value": null,
-    "max_length": null,
+    "max_length": 255,
     "numeric_precision": null,
     "numeric_scale": null,
-    "is_nullable": true,
+    "is_nullable": false,
     "is_unique": false,
     "is_primary_key": false,
     "is_generated": false,
     "generation_expression": null,
     "has_auto_increment": false,
-    "foreign_key_table": "directus_files",
-    "foreign_key_column": "id"
+    "foreign_key_table": null,
+    "foreign_key_column": null
   }
 }

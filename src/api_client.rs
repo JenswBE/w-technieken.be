@@ -203,6 +203,12 @@ pub struct GeneralSettings {
     pub vat_number: String,
     #[cynic(rename = "service_area")]
     pub service_area: Option<String>,
+    #[cynic(rename = "facebook_name")]
+    pub facebook_name: String,
+    #[cynic(rename = "facebook_link")]
+    pub facebook_link: String,
+    #[cynic(rename = "instagram_name")]
+    pub instagram_name: String,
     #[cynic(rename = "terms_and_conditions")]
     pub terms_and_conditions: String,
 }

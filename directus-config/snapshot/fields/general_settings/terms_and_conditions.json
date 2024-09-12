@@ -15,7 +15,7 @@
     "options": {
       "customFormats": null,
       "tinymceOverrides": {
-    "content_style": ".fw-bold { font-weight: bold; } .fst-italic { font-style: italic; } .text-decoration-underline { text-decoration: underline; } @media (prefers-color-scheme: dark) { html { background-color: #0d1117; color: rgb(201, 209, 217) } }",
+        "content_style": ".fw-bold { font-weight: bold; } .fst-italic { font-style: italic; } .text-decoration-underline { text-decoration: underline; } @media (prefers-color-scheme: dark) { html { background-color: #0d1117; color: rgb(201, 209, 217) } }",
         "formats": {
           "bold": {
             "classes": "fw-bold",
@@ -48,7 +48,7 @@
     },
     "readonly": false,
     "required": true,
-    "sort": 7,
+    "sort": 10,
     "special": null,
     "translations": null,
     "validation": null,

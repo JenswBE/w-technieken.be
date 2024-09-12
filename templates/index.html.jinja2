@@ -63,6 +63,27 @@
             </div>
             {% endfor %}
         </div>
+        <div class="row">
+            <div class="col">
+                <p class="fs-5 text-center pt-5">
+                    Of neem gerust een kijkje op
+                    <span class="no-wrap">
+                        <i class="bi-facebook"></i>
+                        <a href="{{ base_common.facebook_link }}" rel="noopener">
+                            {{- base_common.facebook_name -}}
+                        </a>
+                    </span>
+                    en
+                    <span class="no-wrap">
+                        <i class="bi-instagram"></i>
+                        <a href="https://instagram.com/{{ base_common.instagram_name }}" rel="noopener">
+                            {{- base_common.instagram_name -}}
+                        </a>
+                    </span>
+                    voor onze nieuwste updates.
+                </p>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}

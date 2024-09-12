@@ -20,6 +20,9 @@ struct TemplateBaseCommon<'a> {
     email: &'a str,
     phone_number: &'a str,
     vat_number: &'a str,
+    facebook_name: &'a str,
+    facebook_link: &'a str,
+    instagram_name: &'a str,
 }
 
 /// Fields present in each template but with a different value.
@@ -157,6 +160,9 @@ fn main() {
         email: &general_settings.email,
         phone_number: &general_settings.phone_number,
         vat_number: &general_settings.vat_number,
+        facebook_name: &general_settings.facebook_name,
+        facebook_link: &general_settings.facebook_link,
+        instagram_name: &general_settings.instagram_name,
     };
 
     // Generate index page
