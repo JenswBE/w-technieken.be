@@ -4,7 +4,8 @@
 <div class="row g-0 mx-0">
     <div class="col">
         <div class="card border-0 max-height-95vh">
-            <img id="index-card-img" src="/assets/{{ main_image_id }}-index-main-image.jpg" class="card-img rounded-0" />
+            <img id="index-card-img" src="/assets/{{ main_image_id }}-index-main-image.jpg"
+                class="card-img rounded-0" />
             <div class="card-img-overlay rounded-0">
                 <div class="container h-100">
                     <div class="d-flex flex-column h-100 justify-content-center">
@@ -24,6 +25,12 @@
                                 <i class="bi bi-envelope text-white"></i>
                                 <a href="mailto:{{ base_common.email }}">{{ base_common.email }}</a>
                             </p>
+                            {% if let Some(service_area) = service_area %}
+                            <p class="index-contact">
+                                <i class="bi bi-geo-alt text-white"></i>
+                                {{ service_area }}
+                            </p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

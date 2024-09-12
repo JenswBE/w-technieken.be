@@ -1,6 +1,4 @@
 type Query {
-  general_settings(version: String): general_settings
-  general_settings_by_version(version: String!): version_general_settings
   realisations(
     filter: realisations_filter
     sort: [String]
@@ -39,13 +37,13 @@ type Query {
     sort: [String]
   ): [realisations_files_aggregated!]!
   realisations_files_by_version(version: String!, id: ID!): version_realisations_files
+  general_settings(version: String): general_settings
+  general_settings_by_version(version: String!): version_general_settings
 }
 
-type general_settings {
-  email: String!
+type realisations {
   id: ID!
-  phone_number: String!
-  start_image(
+  main_image(
     filter: directus_files_filter
     sort: [String]
     limit: Int
@@ -53,8 +51,22 @@ type general_settings {
     page: Int
     search: String
   ): directus_files
-  terms_and_conditions: String!
-  vat_number: String!
+  name: String!
+  slogan: String
+  """
+  Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
+  """
+  slug: String!
+  sort: Int
+  additional_images(
+    filter: realisations_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): [realisations_files]
+  additional_images_func: count_functions
 }
 
 type directus_files {
@@ -66,8 +78,8 @@ type directus_files {
   type: String
   folder: String
   uploaded_by: String
-  uploaded_on: Date
-  uploaded_on_func: datetime_functions
+  created_on: Date
+  created_on_func: datetime_functions
   modified_by: String
   modified_on: Date
   modified_on_func: datetime_functions
@@ -85,6 +97,11 @@ type directus_files {
   metadata_func: count_functions
   focal_point_x: Int
   focal_point_y: Int
+  tus_id: String
+  tus_data: JSON
+  tus_data_func: count_functions
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
 }
 
 """
@@ -126,8 +143,8 @@ input directus_files_filter {
   type: string_filter_operators
   folder: string_filter_operators
   uploaded_by: string_filter_operators
-  uploaded_on: date_filter_operators
-  uploaded_on_func: datetime_function_filter_operators
+  created_on: date_filter_operators
+  created_on_func: datetime_function_filter_operators
   modified_by: string_filter_operators
   modified_on: date_filter_operators
   modified_on_func: datetime_function_filter_operators
@@ -145,6 +162,11 @@ input directus_files_filter {
   metadata_func: count_function_filter_operators
   focal_point_x: number_filter_operators
   focal_point_y: number_filter_operators
+  tus_id: string_filter_operators
+  tus_data: string_filter_operators
+  tus_data_func: count_function_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
   _and: [directus_files_filter]
   _or: [directus_files_filter]
 }
@@ -234,46 +256,6 @@ input big_int_filter_operators {
 
 input count_function_filter_operators {
   count: number_filter_operators
-}
-
-"""
-
-"""
-type version_general_settings {
-  email: String!
-  id: ID!
-  phone_number: String!
-  start_image: JSON
-  terms_and_conditions: String!
-  vat_number: String!
-}
-
-type realisations {
-  id: ID!
-  main_image(
-    filter: directus_files_filter
-    sort: [String]
-    limit: Int
-    offset: Int
-    page: Int
-    search: String
-  ): directus_files
-  name: String!
-  slogan: String
-  """
-  Let op! Bij het aanpassen van dit veld veranderd de URL van de pagina. Hierdoor werken links die je deelde op b.v. sociale media naar deze pagina niet meer.
-  """
-  slug: String!
-  sort: Int
-  additional_images(
-    filter: realisations_files_filter
-    sort: [String]
-    limit: Int
-    offset: Int
-    page: Int
-    search: String
-  ): [realisations_files]
-  additional_images_func: count_functions
 }
 
 type realisations_files {
@@ -406,11 +388,41 @@ type version_realisations_files {
   sort: Int
 }
 
+type general_settings {
+  email: String!
+  id: ID!
+  phone_number: String!
+  start_image(
+    filter: directus_files_filter
+    sort: [String]
+    limit: Int
+    offset: Int
+    page: Int
+    search: String
+  ): directus_files
+  terms_and_conditions: String!
+  vat_number: String!
+  service_area: String
+}
+
+"""
+
+"""
+type version_general_settings {
+  email: String!
+  id: ID!
+  phone_number: String!
+  start_image: JSON
+  terms_and_conditions: String!
+  vat_number: String!
+  service_area: String
+}
+
 type Subscription {
   directus_files_mutated(event: EventEnum): directus_files_mutated
-  general_settings_mutated(event: EventEnum): general_settings_mutated
   realisations_mutated(event: EventEnum): realisations_mutated
   realisations_files_mutated(event: EventEnum): realisations_files_mutated
+  general_settings_mutated(event: EventEnum): general_settings_mutated
 }
 
 type directus_files_mutated {
@@ -425,12 +437,6 @@ enum EventEnum {
   delete
 }
 
-type general_settings_mutated {
-  key: ID!
-  event: EventEnum
-  data: general_settings
-}
-
 type realisations_mutated {
   key: ID!
   event: EventEnum
@@ -441,5 +447,11 @@ type realisations_files_mutated {
   key: ID!
   event: EventEnum
   data: realisations_files
+}
+
+type general_settings_mutated {
+  key: ID!
+  event: EventEnum
+  data: general_settings
 }
 

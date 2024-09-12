@@ -25,3 +25,6 @@ push_collection "flow_debounce"
 push_collection "general_settings"
 push_collection "realisations"
 push_collection "realisations_files"
+
+# Push users
+push_local_user

@@ -4,6 +4,7 @@
 # Start Directus
 podman compose pull
 podman compose build --pull
+podman compose down
 podman compose up -d
 
 # Start Directus again
@@ -13,7 +14,7 @@ podman compose up -d
 podman compose restart directus
 
 # Sync collections and data
-npx directus-sync push -c directus-sync/local.js
+npx directus-sync@2.2.0 push -c directus-sync/local.js
 ./directus-data/push.sh
 
 # Run static site generator
@@ -22,8 +23,7 @@ cargo install cargo-watch
 cargo watch -x run
 
 # In another terminal
-cd output
-python3 -m http.server
+cd output; python3 -m http.server
 ```
 
 # Update schema's

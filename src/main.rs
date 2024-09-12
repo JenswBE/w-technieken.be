@@ -35,6 +35,7 @@ struct TemplateIndex<'a> {
     base_common: &'a TemplateBaseCommon<'a>,
     base_specific: TemplateBaseSpecific<'a>,
     main_image_id: String,
+    service_area: Option<&'a str>,
     realisations: &'a Vec<Realisation>,
 }
 
@@ -176,6 +177,7 @@ fn main() {
                 title: "Start".to_string(),
             },
             main_image_id: index_main_image_id,
+            service_area: general_settings.service_area.as_ref().map(|sa| sa.as_str()),
             realisations: &realisations,
         }
         .render()

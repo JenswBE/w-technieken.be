@@ -201,6 +201,8 @@ pub struct GeneralSettings {
     pub phone_number: String,
     #[cynic(rename = "vat_number")]
     pub vat_number: String,
+    #[cynic(rename = "service_area")]
+    pub service_area: Option<String>,
     #[cynic(rename = "terms_and_conditions")]
     pub terms_and_conditions: String,
 }
