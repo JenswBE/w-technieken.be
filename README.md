@@ -14,7 +14,7 @@ podman compose up -d
 podman compose restart directus
 
 # Sync collections and data
-npx directus-sync@2.2.0 push -c directus-sync/local.js
+npx directus-sync push -c directus-sync/local.js
 ./directus-data/push.sh
 
 # Run static site generator
