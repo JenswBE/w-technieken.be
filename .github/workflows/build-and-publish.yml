@@ -21,7 +21,7 @@ jobs:
 
       # From https://github.com/actions/cache/blob/main/examples.md#rust---cargo
       - name: Setup cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/bin/
