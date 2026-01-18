@@ -68,6 +68,20 @@
     "public_registration_verify_email": true,
     "public_registration_role": null,
     "public_registration_email_filter": null,
+    "visual_editor_urls": null,
+    "mcp_enabled": false,
+    "mcp_allow_deletes": false,
+    "mcp_prompts_collection": null,
+    "mcp_system_prompt_enabled": true,
+    "mcp_system_prompt": null,
+    "project_owner": null,
+    "project_usage": null,
+    "org_name": null,
+    "product_updates": null,
+    "project_status": null,
+    "ai_openai_api_key": null,
+    "ai_anthropic_api_key": null,
+    "ai_system_prompt": null,
     "_syncId": "2628f42b-515c-4c35-a638-2fdf409e3bb9"
   }
 ]

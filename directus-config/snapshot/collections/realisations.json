@@ -21,9 +21,9 @@
     "translations": [
       {
         "language": "nl-NL",
-        "translation": "Realisaties",
+        "plural": "Realisaties",
         "singular": "Realisatie",
-        "plural": "Realisaties"
+        "translation": "Realisaties"
       }
     ],
     "unarchive_value": null,

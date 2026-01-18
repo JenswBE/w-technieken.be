@@ -20,6 +20,7 @@ services:
       ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWORD: admin
       ADMIN_TOKEN: token_admin
+      ACCEPT_TERMS: "true"
 
   db:
     image: docker.io/library/postgres:16
