@@ -1,0 +1,91 @@
+package templates
+
+templ Base(baseCommon TemplateBaseCommon, baseSpecific TemplateBaseSpecific, baseContent templ.Component, bodyEnd templ.Component) {
+    @Minimal(baseSpecific.Title, baseSpecific.CanonicalURL, bodyEnd) {
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand ms-lg-5" href="/">
+                    <img class="navbar-brand-large navbar-brand-dark d-none" src="/img/navbar-logo-dark.svg" height="50px" />
+                    <img class="navbar-brand-small navbar-brand-dark" src="/img/navbar-logo-short-dark.svg" height="50px" />
+                    <img class="navbar-brand-large navbar-brand-light d-none" src="/img/navbar-logo-light.svg" height="50px" />
+                    <img class="navbar-brand-small navbar-brand-light d-none" src="/img/navbar-logo-short-light.svg"
+                        height="50px" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-lg-5 mt-3 mt-lg-0">
+                        for _, navLink := range baseCommon.NavLinks {
+                            if len(navLink.Children) == 0 {
+                                <li class="nav-item">
+                                    if navLink.Name == baseSpecific.CurrentLink.Name {
+                                        <a class="nav-link active" aria-current="page" href={ navLink.URL }>
+                                            { navLink.Name }
+                                        </a>
+                                    } else {
+                                        <a class="nav-link" href={ navLink.URL }>
+                                            { navLink.Name }
+                                        </a>
+                                    }
+                                </li>
+                            } else {
+                                <li class="nav-item dropdown show">
+                                    if navLink.Name == baseSpecific.CurrentLink.Name {
+                                        <a class="nav-link dropdown-toggle active" aria-current="page" href="#" role="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            { navLink.Name }
+                                        </a>
+                                    } else {
+                                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            { navLink.Name }
+                                        </a>
+                                    }
+                                    <ul class="dropdown-menu">
+                                        for _, navLinkChild := range navLink.Children {
+                                            <li><a class="dropdown-item" href={ navLinkChild.URL }>{ navLinkChild.Name }</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        @baseContent
+
+        <!-- Footer-->
+        <footer class="text-center pt-5 pb-5">
+            <div class="container px-4 px-lg-5">
+                <p class="text-muted small mb-0 lh-lg">
+                    <a href="tel:{ baseCommon.PhoneNumber }" class="no-wrap px-2">{ baseCommon.PhoneNumber }</a>
+                    <a href="mailto:{ baseCommon.Email }" class="no-wrap px-2">{ baseCommon.Email }</a>
+                    <span class="no-wrap px-2">{ baseCommon.VATNumber }</span>
+                </p>
+                <p class="text-muted small mb-0 lh-lg">
+                    <span class="no-wrap px-2">
+                        <i class="bi-facebook"></i>
+                        <a href={ baseCommon.FacebookLink } rel="noopener">
+                            { baseCommon.FacebookName }
+                        </a>
+                    </span>
+                    <span class="no-wrap px-2">
+                        <i class="bi-instagram"></i>
+                        <a href={ "https://instagram.com/" + baseCommon.InstagramName } rel="noopener">
+                            { baseCommon.InstagramName }
+                        </a>
+                    </span>
+                </p>
+                <p class="text-muted small pt-3 mb-0">
+                    <a href="/algemene-voorwaarden/" class="no-wrap px-2">Algemene voorwaarden</a>
+                </p>
+                <p class="text-muted small mb-0">Copyright &copy; Willemsens Technieken</p>
+                <p class="text-muted small mb-0">Made by <a target="_blank" href="https://jensw.be">JenswBE</a></p>
+            </div>
+        </footer>
+    }
+}
