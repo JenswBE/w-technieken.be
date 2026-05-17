@@ -53,4 +53,4 @@ jobs:
           echo '${{ secrets.SSH_KEY }}' > ssh_key
 
           # Sync generated files
-          rsync --verbose --archive --delete --rsh='ssh -p ${{ vars.SSH_PORT }} -i ssh_key' output/ ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/
+          rsync --verbose --archive --delete --rsh='ssh -p ${{ vars.SSH_PORT }} -i ssh_key' output/ ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:.
