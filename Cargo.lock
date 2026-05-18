@@ -53,7 +53,7 @@ version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -64,7 +64,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -241,13 +241,13 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "cynic"
-version = "3.12.0"
+version = "3.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b215a2d2bebcbbd3bd005b59f5b1b7dc5eb07343d64db80ec23aff9e7e1a2e2"
+checksum = "f2e722e1560ed4e4260cf35ac5fafc422aa7682c919db5a14209e4afad4446c2"
 dependencies = [
  "cynic-proc-macros",
  "ref-cast",
- "reqwest",
+ "reqwest 0.13.3",
  "serde",
  "serde_json",
  "static_assertions",
@@ -256,9 +256,9 @@ dependencies = [
 
 [[package]]
 name = "cynic-codegen"
-version = "3.12.0"
+version = "3.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9eeb2693bc9916fa694d2023bb1adc4356a8896b9b96478f23d51a263140811c"
+checksum = "fde92ad70b36e9794eab14cbe915ae33e0ee8013844b7dcacad686830e107a5f"
 dependencies = [
  "cynic-parser",
  "darling",
@@ -273,9 +273,9 @@ dependencies = [
 
 [[package]]
 name = "cynic-parser"
-version = "0.10.0"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3136ed6464e975162667c08092fcb54947ce08785fca301162fd614c4dfd974f"
+checksum = "d4dfae2e0e25c72720197bde791ef9b840562ed6418eab6d8505f1d8fed27e86"
 dependencies = [
  "indexmap",
  "lalrpop-util",
@@ -284,9 +284,9 @@ dependencies = [
 
 [[package]]
 name = "cynic-proc-macros"
-version = "3.12.0"
+version = "3.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c0b2eab13c954db96ae72db53b2d275c237f3197499212c4d55b5ae7418e5b2"
+checksum = "64118c37832e4ff3e2b8ffaf2f3a08d1b646fa049e90ff54826abac01005ae11"
 dependencies = [
  "cynic-codegen",
  "darling",
@@ -403,7 +403,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1252,6 +1252,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "reqwest"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62e0021ea2c22aed41653bc7e1419abb2c97e038ff2c33d0e1309e49a97deec0"
+dependencies = [
+ "base64",
+ "bytes",
+ "futures-channel",
+ "futures-core",
+ "futures-util",
+ "http",
+ "http-body",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "js-sys",
+ "log",
+ "percent-encoding",
+ "pin-project-lite",
+ "serde",
+ "serde_json",
+ "sync_wrapper",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tower-service",
+ "url",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "ring"
 version = "0.17.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1281,7 +1314,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1542,7 +1575,7 @@ dependencies = [
  "getrandom 0.3.4",
  "once_cell",
  "rustix",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1752,7 +1785,7 @@ dependencies = [
  "insta",
  "log",
  "rayon",
- "reqwest",
+ "reqwest 0.12.28",
 ]
 
 [[package]]
